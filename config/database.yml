@@ -1,27 +1,27 @@
 development:
     adapter: postgresql
     encoding: unicode
-    database: escal_development
+    database: wallboard_development
     pool: 5
     host: localhost
     port: 5432
-    username: escal
+    username: wallboard
     password: escal
 
 test:
   adapter: postgresql
   encoding: unicode
-  database: escal_test
+  database: wallboard_test
   pool: 5
-  username: escal
+  username: wallboard
   password:
 
 production:
   adapter: postgresql
   encoding: unicode
-  database: escal_production
+  database: wallboard_production
   pool: 5
   host: localhost
   port: 5432
-  username: escal
-  password: escal
+  username: wallboard
+  password: wallboard
