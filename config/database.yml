@@ -1,0 +1,27 @@
+development:
+    adapter: postgresql
+    encoding: unicode
+    database: escal_development
+    pool: 5
+    host: localhost
+    port: 5432
+    username: escal
+    password: escal
+
+test:
+  adapter: postgresql
+  encoding: unicode
+  database: escal_test
+  pool: 5
+  username: escal
+  password:
+
+production:
+  adapter: postgresql
+  encoding: unicode
+  database: escal_production
+  pool: 5
+  host: localhost
+  port: 5432
+  username: escal
+  password: escal
