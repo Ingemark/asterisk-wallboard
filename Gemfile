@@ -23,6 +23,9 @@ end
 gem 'rails_admin'
 gem 'jquery-rails'
 gem "devise"
+gem "cancan"
+gem "rails_config"
+gem "twitter-bootstrap-rails"
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 

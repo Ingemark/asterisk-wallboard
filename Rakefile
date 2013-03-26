@@ -4,4 +4,4 @@
 
 require File.expand_path('../config/application', __FILE__)
 
-EscalationSystem::Application.load_tasks
+WallboardSystem::Application.load_tasks
