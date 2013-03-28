@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130325185934) do
+ActiveRecord::Schema.define(:version => 20130327224154) do
 
   create_table "pbx_queues", :force => true do |t|
     t.string   "name"
@@ -53,6 +53,7 @@ ActiveRecord::Schema.define(:version => 20130325185934) do
     t.datetime "updated_at",                             :null => false
     t.string   "role"
     t.string   "extension"
+    t.integer  "agent_id"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

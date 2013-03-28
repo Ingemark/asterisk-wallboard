@@ -13,12 +13,14 @@ class ApplicationController < ActionController::Base
   protected
 
   def after_sign_in_path_for(resource)
+    cookies.delete :pbxis_ticket
     stored_location_for(:user) || "/#{current_user.role}"
   end
 
   private
 
   def after_sign_out_path_for(resource)
+    cookies.delete :pbxis_ticket
     stored_location_for(:user) || root_path
   end
 end

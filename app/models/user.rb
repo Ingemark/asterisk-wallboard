@@ -14,9 +14,12 @@ class User < ActiveRecord::Base
 
   
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :email, :password, :password_confirmation, :remember_me, :role, :pbx_queue_ids
+  attr_accessible :email, :password, :password_confirmation, :remember_me, :role, :pbx_queue_ids, :extension, :agent_id
 
   validates :role, :presence => true
+  validates :agent_id, :uniqueness => true
+  validates :extension, :uniqueness => true
+  validates :email, :uniqueness => true
   
   rails_admin do
     object_label_method do

@@ -26,6 +26,7 @@ gem "devise"
 gem "cancan"
 gem "rails_config"
 gem "twitter-bootstrap-rails"
+gem "rest-client"
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 

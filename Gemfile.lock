@@ -124,6 +124,8 @@ GEM
     rdoc (3.12.2)
       json (~> 1.4)
     remotipart (1.0.5)
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
     safe_yaml (0.8.6)
     sass (3.2.7)
     sass-rails (3.2.6)
@@ -163,6 +165,7 @@ DEPENDENCIES
   rails (= 3.2.11)
   rails_admin
   rails_config
+  rest-client
   sass-rails (~> 3.2.3)
   twitter-bootstrap-rails
   uglifier (>= 1.0.3)
