@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WallboardSystem</title>
+  <%= stylesheet_link_tag    "application", :media => "all" %>
+  <%= javascript_include_tag "application" %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+<div class="alert alert-info <% if !notice %>hidden<% end %>">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <%= notice %>
+</div>
+<div class="alert alert-error <% if !alert %>hidden<% end %>">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <%= alert %>
+</div>
+
+<div id="signin-container" class="container">
+<%= yield %>
+</div>
+</body>
+</html>

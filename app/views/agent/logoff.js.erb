@@ -1,0 +1,9 @@
+<% if alert %>
+$(".alert").html('<%= alert %>').removeClass("hidden");
+<% elsif @pbxis_result["response"] == "Error" %>
+$(".alert").html('<strong>Error while trying to log agent off:</strong> <%= @pbxis_result["message"] %>').removeClass("hidden");
+<% else %>
+$('form[action="<%= request.fullpath %>"]').parent().find(".hidden").removeClass("hidden");
+$('form[action="<%= request.fullpath %>"]').addClass("hidden");
+$(".alert").addClass('hidden'); 
+<% end %>

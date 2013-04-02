@@ -7,10 +7,36 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
-<p class="notice"><%= notice %></p>
-<p class="alert"><%= alert %></p>
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+            <a class="brand" href="">
+                Wallboard System
+                <small><%= yield :view_role %></small>
+            </a>
+            <div class="nav-collapse">
+                <ul class="nav pull-right">
+                    <li>
+                        <a href="<%= destroy_user_session_path %>" data-method="delete" rel="nofollow">
+                            <span class="label label-important">Log out</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="alert alert-info <% if !notice %>hidden<% end %>">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      <%= notice %>
+    </div>
+    <div class="alert alert-error <% if !alert %>hidden<% end %>">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      <%= alert %>
+    </div>
+</div>
 
 <%= yield %>
-
 </body>
 </html>

@@ -25,6 +25,8 @@ gem 'jquery-rails'
 gem "devise"
 gem "cancan"
 gem "rails_config"
+gem "therubyracer"
+gem "less-rails"
 gem "twitter-bootstrap-rails"
 gem "rest-client"
 # To use ActiveModel has_secure_password
