@@ -26,15 +26,21 @@
         </div>
     </div>
 </div>
-<div class="container-fluid">
-    <div class="alert alert-info <% if !notice %>hidden<% end %>">
-      <button type="button" class="close" data-dismiss="alert">&times;</button>
-      <%= notice %>
-    </div>
-    <div class="alert alert-error <% if !alert %>hidden<% end %>">
-      <button type="button" class="close" data-dismiss="alert">&times;</button>
-      <%= alert %>
-    </div>
+<div class="container-fluid" id="notices">
+    <!-- Space reserved for application notices, alerts etc. -->
+    <% if notice %>
+        <div class="alert alert-info <% if !notice %>hidden<% end %>">
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+          <%= notice %>
+        </div>
+    <% end %>
+    
+    <% if alert %>
+        <div class="alert alert-error <% if !alert %>hidden<% end %>">
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+          <%= alert %>
+        </div>
+    <% end %>
 </div>
 
 <%= yield %>

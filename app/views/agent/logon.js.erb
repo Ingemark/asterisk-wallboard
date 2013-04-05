@@ -1,9 +1,8 @@
+$('div#notices').empty();
 <% if alert %>
-$(".alert").html('<%= alert %>').removeClass("hidden");
+show_notice('<%= alert %>', 'alert');
 <% elsif @pbxis_result["response"] == "Error" %>
-$(".alert").html('<strong>Error while trying to log user on:</strong> <%= @pbxis_result["message"] %>').removeClass("hidden");
+show_notice('<strong>Error while trying to log agent on:</strong> <%= @pbxis_result["message"] %>', 'alert');
 <% else %>
-$('form[action="<%= request.fullpath %>"]').parent().find(".hidden").removeClass("hidden");
-$('form[action="<%= request.fullpath %>"]').addClass("hidden");
-$(".alert").addClass('hidden'); 
+toggle_logonoff_btn(<%= @queue.name %>); 
 <% end %>

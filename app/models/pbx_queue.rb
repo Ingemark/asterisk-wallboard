@@ -4,4 +4,5 @@ class PbxQueue < ActiveRecord::Base
   attr_accessible :description, :name, :user_ids
   
   validates :name, :presence => true
+  validates :name, :uniqueness => true
 end

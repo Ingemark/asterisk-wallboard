@@ -4,20 +4,17 @@ class AgentController < ApplicationController
   # Action renders agent's home view with all the queues he has permission 
   # to monitor together with actions he's allowed to do on those queues.
   def index
+    require 'pbxis'
     @queues = current_user.pbx_queues
 
     
-    # Get PBXIS ticket
+    # Get ticket
     if !@queues.empty? && !cookies.has_key?(:pbxis_ticket)
       
-      pbxis_params = {
-        :queues => @queues.map { |q| q.name },
-        :agents => [current_user.extension]
-      }
-      
       begin
-        cookies[:pbxis_ticket] = RestClient.post("http://#{Settings.pbxisws[:host]}:#{Settings.pbxisws[:port]}/ticket", 
-          pbxis_params.to_json, :content_type => :json).to_str.gsub('"', '')
+        queues = @queues.map { |q| q.name }
+        agents = [current_user.extension]
+        cookies[:pbxis_ticket] = Pbxis::PbxisWS.get_ticket queues, agents 
       rescue => e
         flash[:alert] = "An error occurred while trying to retrieve PBXIS ticket: #{e.message}"
       end
@@ -27,9 +24,7 @@ class AgentController < ApplicationController
     begin
         @queue_statuses = {}
         @queues.each do |queue|
-          @queue_statuses[queue.name] = ActiveSupport::JSON.decode(
-            RestClient.get("http://#{Settings.pbxisws[:host]}:#{Settings.pbxisws[:port]}/queue/status?queue=#{queue.name}"))[0]
-          @queue_statuses[queue.name]["members"].delete_if { |m| m["memberName"] != current_user.extension }
+          @queue_statuses[queue.name] = Pbxis::PbxisWS.get_status queue.name
         end
     rescue => e
       flash[:alert] = "An error occurred while trying to retrieve queue status: #{e.message}"
@@ -42,9 +37,11 @@ class AgentController < ApplicationController
   
   # Action logs current user on the specified queue.
   def logon
-    require "pbxis_functions"
+    require "pbxis"
     begin
-      @pbxis_result = PbxisFunctions.log_on_off current_user, params[:queue_id], :add
+      agent = current_user.extension
+      @queue = PbxQueue.find(params[:queue_id])
+      @pbxis_result = Pbxis::PbxisWS.log_on agent, @queue.name
     rescue => e
       flash[:alert] = e.message
     end
@@ -56,9 +53,11 @@ class AgentController < ApplicationController
   
   # Action logs current user off the specified queue.
   def logoff
-    require "pbxis_functions"
+    require "pbxis"
     begin
-      @pbxis_result = PbxisFunctions.log_on_off current_user, params[:queue_id], :remove
+      agent = current_user.extension
+      @queue = PbxQueue.find(params[:queue_id])
+      @pbxis_result = Pbxis::PbxisWS.log_off agent, @queue.name
     rescue => e
       flash[:alert] = e.message
     end

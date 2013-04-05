@@ -5,11 +5,16 @@ function pbx_extension_status(agent, status) {
     $("td#ext-status").html(status);
 }
 function pbx_queue_count(queue, count) {
-    $("td.count-" + queue).html(count);
+    $('[data-queue-count="' + queue + '""]').html(count);
 }
 function pbx_agent_status(agent, queue, status) {
-    $("td.status-" + queue + "-" + agent).html(status);
-    // TODO Toggle action buttons
+    $('[data-queue-status="' + queue + '-' + agent + '"]').html(status);
+    if(status == "loggedoff"){
+        remove_queue_logoff_action(queue, agent);
+    }else if(status == "loggedon"){
+        add_queue_logoff_action(queue, agent);
+    }
+    toggle_logonoff_btn(queue);
 }
 
 function handle_event(e) {

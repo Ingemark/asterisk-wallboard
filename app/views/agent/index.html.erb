@@ -28,6 +28,9 @@
           </div>
         </div>
         <div class="span10">
+            
+            <!-- Table with queues and their statuses -->
+            <% if !@queues.empty? %>
             <table class="table table-striped table-bordered table-condensed">
                 <thead>
                     <tr>
@@ -39,27 +42,27 @@
                 </thead>
                 <tbody>
                 <% @queues.each do |queue| %>
-                    <tr id="qid-<%= queue.name %>">
+                    <tr data-queue="<%= queue.name %>">
                         <td><%= queue.name %></td>
-                        <td class="<%= "status-#{queue.name}-#{current_user.extension}" %>">
-                            <% if !@queue_statuses[queue.name]["members"].empty? %>
-                                <%= @queue_statuses[queue.name]["members"][0]["status"] %>
-                            <% end %>
+                        <td data-queue-status="<%= "#{queue.name}-#{current_user.extension}" %>">
+                                <%= @queue_statuses[queue.name]["members"].has_key?(current_user.extension) ?
+                                @queue_statuses[queue.name]["members"][current_user.extension]["status"]:"Logged Off" %>
                         </td>
-                        <td class="<%= "count-#{queue.name}" %>"></td>
-                        <td class="<%= "action-#{queue.name}-#{current_user.extension}" %>">
-                            <% if @queue_statuses[queue.name]["members"].empty? %>
+                        <td data-queue-count="<%= "#{queue.name}" %>"></td>
+                        <td class="action-col">
+                            <% if !@queue_statuses[queue.name]["members"].has_key?(current_user.extension) %>
                                 <%= button_to 'Log On', agent_logon_path(:queue_id => queue.id), {:class => "btn btn-success", :remote => true} %>
-                                <%= button_to 'Log Off', agent_logoff_path(:queue_id => queue.id), {:class => "btn btn-danger hidden", :remote => true} %>
+                                <%= button_to 'Log Off', agent_logoff_path(:queue_id => queue.id), {:form_class => "button_to hidden", :class => "btn btn-danger", :remote => true} %>
                             <% else %>
                                 <%= button_to 'Log Off', agent_logoff_path(:queue_id => queue.id), {:class => "btn btn-danger", :remote => true} %>
-                                <%= button_to 'Log On', agent_logon_path(:queue_id => queue.id), {:class => "btn btn-success hidden", :remote => true} %>
+                                <%= button_to 'Log On', agent_logon_path(:queue_id => queue.id), {:form_class => "button_to hidden", :class => "btn btn-success", :remote => true} %>
                             <% end %>
                         </td>
                     </tr>
                 <% end %>
                 </tbody>
             </table>
+            <% end %>
         </div>
     </div>
 </div>

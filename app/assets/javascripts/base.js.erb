@@ -1,0 +1,39 @@
+/**
+ * Functio toggles between logon and logoff button.
+ * 
+ * @param {Object} old_path - if active button is logon then this is  logon path, logoff path otherwise
+ * @param {Object} new_path - oposite of old_path
+ */
+function toggle_logonoff_btn(queue){
+
+    var $actionCell = $('tr[data-queue="' + queue + '"] td.action-col');
+    $inactiveBtn = $actionCell.find("form.hidden");
+    $activeBtn = $actionCell.find("form:not(.hidden)");
+    $inactiveBtn.removeClass("hidden");
+    $activeBtn.addClass("hidden");    
+}
+
+function add_queue_logoff_action(queue, agent){
+    var $submenu = $('div.btn-group[data-agent="' + agent + '"] li[data-action="logoff"]');
+    
+    if($submenu.hasClass("hidden")){
+        $submenu.removeClass('hidden');
+    }
+    $submenu.find('a[data-queue="' + queue + '"]').parent().removeClass("hidden");
+}
+
+function remove_queue_logoff_action(queue, agent){
+    var $submenu = $('div.btn-group[data-agent="' + agent + '"] li[data-action="logoff"]');
+    $submenu.find('a[data-queue="' + queue + '"]').parent().addClass("hidden");
+    
+    if($submenu.find("li:not(.hidden)").length == 0){
+        $submenu.addClass('hidden');
+    }
+}
+
+function show_notice(msg, level){
+    $notice = $('<div class="alert alert-' + level + '">');
+    $notice.append('<button type="button" class="close" data-dismiss="alert">&times;</button>');
+    $notice.append(msg);
+    $('div#notices').append($notice);
+}

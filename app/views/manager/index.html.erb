@@ -17,9 +17,9 @@
         </tr>
     </thead>
     <tbody>
-        <% @queue_statuses.each do |status| %>
+        <% @queue_statuses.each do |queue_name, status| %>
         <tr>
-            <td><%= status["queue"] %></td>
+            <td><%= queue_name %></td>
             <td><%= status["abandoned"] %></td>
             <td><%= status["completed"] %></td>
             <td><%= status["holdTime"] %></td>
@@ -41,8 +41,8 @@
             <th rowspan="3" class="action-col">Action</th>
         </tr>
         <tr>
-            <% @queue_statuses.each do |status| %>
-                <th colspan="4"><%= status["queue"] %></th>
+            <% @queue_statuses.each do |queue_name, status| %>
+                <th colspan="4"><%= queue_name %></th>
             <% end %>
         </tr>
         <tr>
@@ -55,17 +55,18 @@
     <tbody>
         <% @agents.each do |agent| %>
             <tr>
+                <!-- Agent -->
                 <td><%= agent.extension %></td>
                 
                 <!-- Status -->
-                <% @queue_statuses.each do |status| %>
-                    <% if (index = status["members"].index { |m| m["memberName"] == agent.extension }) %>
-                        <td class="<%= "status-#{status['queue']}-#{agent.extension}" %>"><%= status["members"][index]["status"] %></td>
-                        <td><%= status["members"][index]["callsTaken"] %></td>
-                        <td><%= status["members"][index]["lastCall"] %></td>
-                        <td><%= status["members"][index]["penalty"] %></td>
+                <% @queue_statuses.each do |queue_name, status| %>
+                    <% if status["members"].has_key? agent.extension %>
+                        <td data-queue-status="<%= "#{queue_name}-#{agent.extension}" %>"><%= status["members"][agent.extension]["status"] %></td>
+                        <td><%= status["members"][agent.extension]["callsTaken"] %></td>
+                        <td><%= status["members"][agent.extension]["lastCall"] %></td>
+                        <td><%= status["members"][agent.extension]["penalty"] %></td>
                     <% else %>
-                        <td class="<%= "status-#{status['queue']}-#{agent.extension}" %>">loggedoff</td>
+                        <td data-queue-status="<%= "#{queue_name}-#{agent.extension}" %>">Logged Off</td>
                         <td>N/A</td>
                         <td>N/A</td>
                         <td>N/A</td>
@@ -74,27 +75,26 @@
                 
                 <!-- Actions -->
                 <td>
-                    <div class="btn-group">
+                    <div class="btn-group" data-agent="<%= agent.extension %>">
                         <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Action<span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <% if @queue_statuses.index { |s| s["members"].index { |m| m["memberName"] == agent.extension } } %>
-                            <li class="dropdown-submenu pull-left">
+                            <li class="dropdown-submenu pull-left 
+                            <% if @queue_statuses.select { |key, value| value["members"].has_key? agent.extension }.empty? %>hidden<% end %>"
+                            data-action="logoff">
                                 <a tabindex="-1" href="#">Log Off</a>
                                 <ul class="dropdown-menu">
-                                    <% @queue_statuses.each do |status| %>
-                                        <% if status["members"].index { |m| m["memberName"] == agent.extension} %>
+                                    <% @queues.each do |queue| %>
+                                        <% if @queue_statuses[queue.name]["members"].has_key? agent.extension %>
                                         <li>
-                                            <%= link_to status["queue"], manager_agent_logoff_path(agent.id, status["queue"]), {:tabindex => -1, :remote => true} %>
-                                        </li>
+                                        <% else %>
+                                        <li class="hidden">
                                         <% end %>
+                                        <%= link_to queue.name, manager_agent_logoff_path(agent.id, queue.name), 
+                                            {:data => { :'queue' => "#{queue.name}" }, :tabindex => -1, :remote => true} %>
+                                        </li>
                                     <% end %>
                                 </ul>
                             </li>
-                            <% else %>
-                            <li class="dropdown-submenu pull-left disabled">
-                                <a tabindex="-1" href="#">Log Off</a>
-                            </li>
-                            <% end %>
                             <li><a tabindex="-1" href="#">Whisper</a></li>
                             <li><a tabindex="-1" href="#">Eavesdrop</a></li>
                             <li><a tabindex="-1" href="#">Record</a></li>
