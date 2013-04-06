@@ -39,5 +39,24 @@ class ManagerController < ApplicationController
     rescue => e
       flash[:alert] = e.message
     end
+    
+    respond_to do |format|
+      format.js
+    end
+  end
+  
+  def reset_queue_stats
+    require "pbxis"
+    begin
+      raise "ok"
+      @queue = PbxQueue.where(:name => params[:queue])[0]
+      @pbxis_result = Pbxis::PbxisWS.reset_queue_stats @queue.name
+    rescue => e
+      flash[:alert] = e.message
+    end
+    
+    respond_to do |format|
+      format.js
+    end
   end
 end
