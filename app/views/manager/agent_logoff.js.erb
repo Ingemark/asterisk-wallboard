@@ -1,7 +1,3 @@
 <% if alert %>
-$(".alert").html('<%= alert %>').removeClass("hidden");
-<% elsif @pbxis_result["response"] == "Error" %>
-$(".alert").html('<strong>Error while trying to log agent off:</strong> <%= @pbxis_result["message"] %>').removeClass("hidden");
-<% else %>
-remove_queue_logoff_action(@queue.name, @agent.extension);
+show_notice(<%= alert %>);
 <% end %>
