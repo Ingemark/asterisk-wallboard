@@ -1,38 +1,75 @@
 /**
- * Functio toggles between logon and logoff button.
+ * Function unhides logon action button and hides logoff button in
+ * agent view.
  * 
- * @param {Object} old_path - if active button is logon then this is  logon path, logoff path otherwise
- * @param {Object} new_path - oposite of old_path
+ * @param {Object} queue - queue which buttons need to be toggled
  */
-function toggle_logonoff_btn(queue){
-
+function toggle_logon_btn(queue){
     var $actionCell = $('tr[data-queue="' + queue + '"] td.action-col');
-    $inactiveBtn = $actionCell.find("form.hidden");
-    $activeBtn = $actionCell.find("form:not(.hidden)");
-    $inactiveBtn.removeClass("hidden");
-    $activeBtn.addClass("hidden");    
+    $logonBtnForm = $actionCell.find("input.logon-btn").parents("form");
+    $logoffBtnForm = $actionCell.find("input.logoff-btn").parents("form");
+    $logonBtnForm.removeClass("hidden");
+    $logoffBtnForm.addClass("hidden");    
 }
 
+/**
+ * Function unhides logoff action button and hides logon button in
+ * agent view. 
+ * @param {Object} queue - queue which buttons need to be toggled
+ */
+function toggle_logoff_btn(queue){
+    var $actionCell = $('tr[data-queue="' + queue + '"] td.action-col');
+    $logonBtnForm = $actionCell.find("input.logon-btn").parents("form");
+    $logoffBtnForm = $actionCell.find("input.logoff-btn").parents("form");
+    $logoffBtnForm.removeClass("hidden");    
+    $logonBtnForm.addClass("hidden");
+}
+
+/**
+ * Function unhides logoff button for specified queue and agent in 
+ * actions menu in manager view.
+ * 
+ * @param {Object} queue
+ * @param {Object} agent
+ */
 function add_queue_logoff_action(queue, agent){
     var $submenu = $('div.btn-group[data-agent="' + agent + '"] li[data-action="logoff"]');
     
+    // Unhide logoff submenu if it is hidden
     if($submenu.hasClass("hidden")){
         $submenu.removeClass('hidden');
     }
     $submenu.find('a[data-queue="' + queue + '"]').parent().removeClass("hidden");
 }
 
+/**
+ * Function hides logoff button for specified queue and agent in 
+ * actions menu in manager view.
+ * 
+ * @param {Object} queue
+ * @param {Object} agent
+ */
 function remove_queue_logoff_action(queue, agent){
     var $submenu = $('div.btn-group[data-agent="' + agent + '"] li[data-action="logoff"]');
     $submenu.find('a[data-queue="' + queue + '"]').parent().addClass("hidden");
     
+    // hide logoff submenu if agent isn't logged to any of the queues
     if($submenu.find("li:not(.hidden)").length == 0){
         $submenu.addClass('hidden');
     }
 }
 
+/**
+ * Function shows closable notice with specified message and notification
+ * level on top of the page.
+ * 
+ * Available levels: error, info, success
+ * 
+ * @param {Object} msg - message to display
+ * @param {Object} level
+ */
 function show_notice(msg, level){
-    $notice = $('<div class="alert alert-' + level + '">');
+    $notice = $('<div class="alert alert-block alert-' + level + '">');
     $notice.append('<button type="button" class="close" data-dismiss="alert">&times;</button>');
     $notice.append(msg);
     $('div#notices').append($notice);
