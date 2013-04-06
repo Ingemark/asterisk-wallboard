@@ -19,7 +19,11 @@ module Pbxis
         :agent => agent
       }
       begin
-          ActiveSupport::JSON.decode(RestClient.post("#{HOST_ADDR}/queue/add", params.to_json, :content_type => :json))
+          response = ActiveSupport::JSON.decode(RestClient.post("#{HOST_ADDR}/queue/add", params.to_json, :content_type => :json))
+          if response["response"] == "Error"
+            raise response["response"]
+          end
+          response
       rescue => e
         raise "An error occurred while trying to log agent on: #{e.message}"
       end
@@ -31,7 +35,11 @@ module Pbxis
         :agent => agent
       }
       begin
-          ActiveSupport::JSON.decode(RestClient.post("#{HOST_ADDR}/queue/remove", params.to_json, :content_type => :json))
+          response = ActiveSupport::JSON.decode(RestClient.post("#{HOST_ADDR}/queue/remove", params.to_json, :content_type => :json))
+          if response["response"] == "Error"
+            raise response["response"]
+          end
+          response
       rescue => e
         raise "An error occurred while trying to log agent on: #{e.message}"
       end
@@ -44,6 +52,19 @@ module Pbxis
       status["members"] = Hash[status["members"].map { |m| [m["memberName"].gsub("SIP/", ""), m] }]
       status["members"].each_value { |m| m["memberName"] = m["memberName"].gsub("SIP/", "") }
       status
+    end
+    
+    def self.reset_queue_stats(queue)
+      params = {:queue => queue}
+      begin
+          response = ActiveSupport::JSON.decode(RestClient.post("#{HOST_ADDR}/queue/reset", params.to_json, :content_type => :json))
+          if response["response"] == "Error"
+            raise response["response"]
+          end
+          response
+      rescue => e
+        raise "An error occurred while trying to reset stats on queue #{queue}: #{e.message}"
+      end
     end
   end
 end
