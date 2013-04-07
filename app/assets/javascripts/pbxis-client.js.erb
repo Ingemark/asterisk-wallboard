@@ -1,20 +1,35 @@
 function pbx_connection(is_connected) {console.log("** Connection");console.log("Is Connected: " + is_connected);}
 function pbx_agent_name(agent, name) {console.log("** Agent name");console.log("Agent: " + agent);console.log("Name: " + name);}
-function pbx_phone_num(num) {console.log("** Phone Num");console.log("Num: " + num);}
+
+function pbx_phone_num(agent, num, name) {
+    if(num != null){
+        $('table#active-call-status td[data-property="number"]').html(num);
+            $("table#active-call-status").fadeIn("fast");
+        if(name != null){
+            $('table#active-call-status td[data-property="name"]').html(name);
+        }
+    }else{
+        $('table#active-call-status td[data-property="number"]').html("N/A");
+        $('table#active-call-status td[data-property="name"]').html("N/A");
+        $("table#active-call-status").fadeOut("fast");
+    }
+}
+
 function pbx_extension_status(agent, status) {
-    $("td#ext-status").html(status);
+    $('[data-ext-status="' + agent + '"]').html(status);
 }
 function pbx_queue_count(queue, count) {
-    $('[data-queue-count="' + queue + '""]').html(count);
+    $('tr[data-queue="' + queue + '"] td[data-property="count"]').html(count);
 }
 function pbx_agent_status(agent, queue, status) {
     $('[data-queue-status="' + queue + '-' + agent + '"]').html(status);
     if(status == "loggedoff"){
         remove_queue_logoff_action(queue, agent);
+        toggle_logon_btn(queue);
     }else if(status == "loggedon"){
         add_queue_logoff_action(queue, agent);
+        toggle_logoff_btn(queue);
     }
-    toggle_logonoff_btn(queue);
 }
 
 function handle_event(e) {

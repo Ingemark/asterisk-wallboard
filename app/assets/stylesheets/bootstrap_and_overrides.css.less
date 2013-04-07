@@ -30,7 +30,8 @@
 // Example:
 // @linkColor: #ff0000;
 
-@borderColor: #DDD;
+@border: #DDD;
+@radius: 5px;
 body {
     padding-top: 65px;
     background: #f5f5f5;
@@ -49,8 +50,8 @@ table.table thead th {
 }
 
 div#signin-container.container {
-  .border-radius(5px);
-  border: solid thin @grayLight;
+  .border-radius(@radius);
+  border: solid thin @border;
   background: @white;
   width: 250px;
   padding: 20px;
@@ -62,10 +63,9 @@ div#signin-container.container input[type=checkbox] {
 }
 
 div#agent-phone-status {
-  .border-radius(5px);
+  .border-radius(@radius);
   background: @white;
-  height: 300px;
-  border: solid thin @borderColor;
+  border: solid thin @border;
   padding: 5px;
 }
 
@@ -76,4 +76,12 @@ table.table th.action-col {
 
 table.table td input[type=submit] {
   width: 100%;
+}
+
+table.call {
+  
+  th {
+    background: @blue;
+    color: @white;
+  }
 }

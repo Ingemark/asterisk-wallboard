@@ -2,6 +2,8 @@
 
 <div class="container-fluid">
     <div class="row-fluid">
+        
+        <!-- Extension status box -->
         <div class="span2">
           <div id="agent-phone-status">
             <div class="navbar navbar-info">
@@ -21,12 +23,33 @@
                     </tr>
                     <tr>
                         <td>Status:</td>
-                        <td id="ext-status"></td>
+                        <td data-ext-status="<%= current_user.extension %>">N/A</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <!-- Active call status -->
+            <table id="active-call-status" class="table table-bordered call" style="display:none;">
+                <thead>
+                    <tr>
+                        <th colspan="2">Active Call Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Number:</td>
+                        <td data-property="number">N/A</td>
+                    </tr>
+                    <tr>
+                        <td>Name:</td>
+                        <td data-property="name">N/A</td>
                     </tr>
                 </tbody>
             </table>
           </div>
         </div>
+        
+        <!-- Queue status table -->
         <div class="span10">
             
             <!-- Table with queues and their statuses -->
@@ -37,6 +60,11 @@
                         <th>Queue</th>
                         <th>Agent Status</th>
                         <th>Queue Count</th>
+                        <th>Abandoned</th>
+                        <th>Completed</th>
+                        <th>Hold Time</th>
+                        <th>Max</th>
+                        <th>Talk Time</th>
                         <th class="action-col">Action</th>
                     </tr>
                 </thead>
@@ -48,14 +76,23 @@
                                 <%= @queue_statuses[queue.name]["members"].has_key?(current_user.extension) ?
                                 @queue_statuses[queue.name]["members"][current_user.extension]["status"]:"Logged Off" %>
                         </td>
-                        <td data-queue-count="<%= "#{queue.name}" %>"></td>
+                        <td data-property="count">N/A</td>
+                        <td data-property="abandoned"><%= @queue_statuses[queue.name]["abandoned"] %></td>
+                        <td data-property="completed"><%= @queue_statuses[queue.name]["completed"] %></td>
+                        <td data-property="holdTime"><%= @queue_statuses[queue.name]["holdTime"] %></td>
+                        <td data-property="max"><%= @queue_statuses[queue.name]["max"] %></td>
+                        <td data-property="talkTime"><%= @queue_statuses[queue.name]["talkTime"] %></td>
+                        
+                        <!-- Queue actions -->
                         <td class="action-col">
                             <% if !@queue_statuses[queue.name]["members"].has_key?(current_user.extension) %>
-                                <%= button_to 'Log On', agent_logon_path(:queue_id => queue.id), {:class => "btn btn-success", :remote => true} %>
-                                <%= button_to 'Log Off', agent_logoff_path(:queue_id => queue.id), {:form_class => "button_to hidden", :class => "btn btn-danger", :remote => true} %>
+                                <%= button_to 'Log On', agent_logon_path(:queue_id => queue.id), {:class => "btn btn-success logon-btn", :remote => true} %>
+                                <%= button_to 'Log Off', agent_logoff_path(:queue_id => queue.id), {:form_class => "button_to hidden", 
+                                    :class => "btn btn-danger logoff-btn", :remote => true} %>
                             <% else %>
-                                <%= button_to 'Log Off', agent_logoff_path(:queue_id => queue.id), {:class => "btn btn-danger", :remote => true} %>
-                                <%= button_to 'Log On', agent_logon_path(:queue_id => queue.id), {:form_class => "button_to hidden", :class => "btn btn-success", :remote => true} %>
+                                <%= button_to 'Log Off', agent_logoff_path(:queue_id => queue.id), {:class => "btn btn-danger logoff-btn", :remote => true} %>
+                                <%= button_to 'Log On', agent_logon_path(:queue_id => queue.id), {:form_class => "button_to hidden", 
+                                    :class => "btn btn-success logon-btn", :remote => true} %>
                             <% end %>
                         </td>
                     </tr>
