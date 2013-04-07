@@ -41,19 +41,18 @@
     <thead>
         <tr>
             <th rowspan="3">Agent</th>
-            <th colspan="<%= @queue_statuses.length * 5 %>">Queues</th>
+            <th colspan="<%= @queue_statuses.length * 4 %>">Queues</th>
             <th rowspan="3" class="action-col">Action</th>
         </tr>
         <tr>
             <% @queue_statuses.each do |queue_name, status| %>
-                <th colspan="5"><%= queue_name %></th>
+                <th colspan="4"><%= queue_name %></th>
             <% end %>
         </tr>
         <tr>
             <th>Agent Status</th>
             <th>Extension Status</th>
             <th>Calls Taken</th>
-            <th>Last Call</th>
             <th>Penalty</th>
         </tr>
     </thead>
@@ -69,7 +68,6 @@
                         <td data-queue-status="<%= "#{queue_name}-#{agent.extension}" %>"><%= status["members"][agent.extension]["status"] %></td>
                         <td data-ext-status="<%= agent.extension %>">N/A</td>
                         <td><%= status["members"][agent.extension]["callsTaken"] %></td>
-                        <td><%= status["members"][agent.extension]["lastCall"] %></td>
                         <td><%= status["members"][agent.extension]["penalty"] %></td>
                     <% else %>
                         <td data-queue-status="<%= "#{queue_name}-#{agent.extension}" %>">Logged Off</td>
