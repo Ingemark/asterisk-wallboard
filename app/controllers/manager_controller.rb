@@ -33,9 +33,9 @@ class ManagerController < ApplicationController
   def agent_logoff
     require "pbxis"
     begin
-      @queue = PbxQueue.where(:name => params[:queue])[0]
-      @agent = User.find(params[:agent_id])
-      @pbxis_result = Pbxis::PbxisWS.log_off @agent.extension, @queue.name
+      PbxQueue.where(:name => params[:queue])[0]
+      agent = User.find(params[:agent_id])
+      Pbxis::PbxisWS.log_off agent.extension, queue.name
     rescue => e
       flash[:alert] = e.message
     end
@@ -48,9 +48,9 @@ class ManagerController < ApplicationController
   def reset_queue_stats
     require "pbxis"
     begin
-      raise "ok"
-      @queue = PbxQueue.where(:name => params[:queue])[0]
-      @pbxis_result = Pbxis::PbxisWS.reset_queue_stats @queue.name
+      queue = PbxQueue.where(:name => params[:queue])[0]
+      Pbxis::PbxisWS.reset_queue_stats queue.name
+      @queue_status = Pbxis::PbxisWS.get_status queue.name
     rescue => e
       flash[:alert] = e.message
     end
