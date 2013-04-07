@@ -26,3 +26,7 @@ any of the queues he's previously assigned to by the administrator.
 ##Access Control
 Authentication is implemented using [Devise](https://github.com/plataformatec/devise), and authorization is
 implemented using [CanCan](https://github.com/ryanb/cancan).
+
+## TODO
+* Caching
+* Clear statistics
