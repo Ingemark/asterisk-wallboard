@@ -2,9 +2,9 @@ class User < ActiveRecord::Base
   has_and_belongs_to_many :pbx_queues
   
   # Include default devise modules. Others available are:
-  # :token_authenticatable, :confirmable, :registerable
+  # :token_authenticatable, :confirmable
   # :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable,
+  devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
   # Available roles
