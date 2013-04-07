@@ -1,0 +1,5 @@
+$('table#queue-statuses tr[data-queue="' + '<%= @queue_status["queue"] %>' + '"] td[data-property="abandoned"]').html('<%= @queue_status["abandoned"] %>');
+$('table#queue-statuses tr[data-queue="' + '<%= @queue_status["queue"] %>' + '"] td[data-property="completed"]').html('<%= @queue_status["completed"] %>');
+$('table#queue-statuses tr[data-queue="' + '<%= @queue_status["queue"] %>' + '"] td[data-property="holdTime"]').html('<%= @queue_status["holdTime"] %>');
+$('table#queue-statuses tr[data-queue="' + '<%= @queue_status["queue"] %>' + '"] td[data-property="max"]').html('<%= @queue_status["max"] %>');
+$('table#queue-statuses tr[data-queue="' + '<%= @queue_status["queue"] %>' + '"] td[data-property="talkTime"]').html('<%= @queue_status["talkTime"] %>');

@@ -4,10 +4,11 @@
 
 <!-- Table showing queues statuses -->
 <h3>Queues statuses</h3>
-<table class="table table-striped table-bordered table-condensed">
+<table id="queue-statuses" class="table table-striped table-bordered table-condensed">
     <thead>
         <tr>
             <th>Queueu</th>
+            <th>Queueu Count</th>
             <th>Abandoned</th>
             <th>Completed</th>
             <th>Hold Time</th>
@@ -18,14 +19,17 @@
     </thead>
     <tbody>
         <% @queue_statuses.each do |queue_name, status| %>
-        <tr>
+        <tr data-queue="<%= queue_name %>">
             <td><%= queue_name %></td>
-            <td><%= status["abandoned"] %></td>
-            <td><%= status["completed"] %></td>
-            <td><%= status["holdTime"] %></td>
-            <td><%= status["max"] %></td>
-            <td><%= status["talkTime"] %></td>
-            <td></td>
+            <td data-property="count">N/A</td>
+            <td data-property="abandoned"><%= status["abandoned"] %></td>
+            <td data-property="completed"><%= status["completed"] %></td>
+            <td data-property="holdTime"><%= status["holdTime"] %></td>
+            <td data-property="max"><%= status["max"] %></td>
+            <td data-property="talkTime"><%= status["talkTime"] %></td>
+            <td>
+               <%= button_to 'Reset Stats', manager_reset_queue_stats_path(:queue => queue_name), {:class => 'btn', :remote => true } %>
+            </td>
         </tr>
         <% end %>
     </tbody>
@@ -37,16 +41,17 @@
     <thead>
         <tr>
             <th rowspan="3">Agent</th>
-            <th colspan="<%= @queue_statuses.length * 4 %>">Queues</th>
+            <th colspan="<%= @queue_statuses.length * 5 %>">Queues</th>
             <th rowspan="3" class="action-col">Action</th>
         </tr>
         <tr>
             <% @queue_statuses.each do |queue_name, status| %>
-                <th colspan="4"><%= queue_name %></th>
+                <th colspan="5"><%= queue_name %></th>
             <% end %>
         </tr>
         <tr>
-            <th>Status</th>
+            <th>Agent Status</th>
+            <th>Extension Status</th>
             <th>Calls Taken</th>
             <th>Last Call</th>
             <th>Penalty</th>
@@ -62,6 +67,7 @@
                 <% @queue_statuses.each do |queue_name, status| %>
                     <% if status["members"].has_key? agent.extension %>
                         <td data-queue-status="<%= "#{queue_name}-#{agent.extension}" %>"><%= status["members"][agent.extension]["status"] %></td>
+                        <td data-ext-status="<%= agent.extension %>">N/A</td>
                         <td><%= status["members"][agent.extension]["callsTaken"] %></td>
                         <td><%= status["members"][agent.extension]["lastCall"] %></td>
                         <td><%= status["members"][agent.extension]["penalty"] %></td>
@@ -74,7 +80,7 @@
                 <% end %>
                 
                 <!-- Actions -->
-                <td>
+                <td class="action-col">
                     <div class="btn-group" data-agent="<%= agent.extension %>">
                         <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Action<span class="caret"></span></a>
                         <ul class="dropdown-menu">
