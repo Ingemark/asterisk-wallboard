@@ -14,7 +14,7 @@ class AgentController < ApplicationController
       begin
         queues = @queues.map { |q| q.name }
         agents = [current_user.extension]
-        cookies[:pbxis_ticket] = Pbxis::PbxisWS.get_ticket queues, agents 
+        cookies[:pbxis_ticket] = Pbxis::PbxisWS.get_ticket queues, agents
       rescue => e
         flash[:alert] = "An error occurred while trying to retrieve PBXIS ticket: #{e.message}"
       end

@@ -1,8 +1,1 @@
-$('div#notices').empty();
-<% if alert %>
-show_notice('<%= alert %>', 'alert');
-<% elsif @pbxis_result["response"] == "Error" %>
-show_notice('<strong>Error while trying to log agent on:</strong> <%= @pbxis_result["message"] %>', 'alert');
-<% else %>
-toggle_logonoff_btn(<%= @queue.name %>); 
-<% end %>
+toggle_logoff_btn(<%= @queue.name %>); 
