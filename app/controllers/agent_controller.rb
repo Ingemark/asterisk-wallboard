@@ -1,10 +1,15 @@
 class AgentController < ApplicationController
   authorize_resource :class => false
   
+  def initialize
+    require 'pbxis'
+    @pbxis_ws = Pbxis::PbxisWSCached.new(Settings.pbxisws["host"], Settings.pbxisws["port"])
+    super
+  end
+  
   # Action renders agent's home view with all the queues he has permission 
   # to monitor together with actions he's allowed to do on those queues.
   def index
-    require 'pbxis'
     @queues = current_user.pbx_queues
 
     
@@ -14,7 +19,7 @@ class AgentController < ApplicationController
       begin
         queues = @queues.map { |q| q.name }
         agents = [current_user.extension]
-        cookies[:pbxis_ticket] = Pbxis::PbxisWS.get_ticket queues, agents
+        cookies[:pbxis_ticket] = @pbxis_ws.get_ticket queues, agents
       rescue => e
         flash[:alert] = "An error occurred while trying to retrieve PBXIS ticket: #{e.message}"
       end
@@ -24,7 +29,7 @@ class AgentController < ApplicationController
     begin
         @queue_statuses = {}
         @queues.each do |queue|
-          @queue_statuses[queue.name] = Pbxis::PbxisWS.get_status queue.name
+          @queue_statuses[queue.name] = @pbxis_ws.get_status queue.name
         end
     rescue => e
       flash[:alert] = "An error occurred while trying to retrieve queue status: #{e.message}"
@@ -37,11 +42,10 @@ class AgentController < ApplicationController
   
   # Action logs current user on the specified queue.
   def logon
-    require "pbxis"
     begin
       agent = current_user.extension
       @queue = PbxQueue.find(params[:queue_id])
-      @pbxis_result = Pbxis::PbxisWS.log_on agent, @queue.name
+      @pbxis_result = @pbxis_ws.log_on agent, @queue.name
     rescue => e
       flash[:alert] = e.message
     end
@@ -53,11 +57,10 @@ class AgentController < ApplicationController
   
   # Action logs current user off the specified queue.
   def logoff
-    require "pbxis"
     begin
       agent = current_user.extension
       @queue = PbxQueue.find(params[:queue_id])
-      @pbxis_result = Pbxis::PbxisWS.log_off agent, @queue.name
+      @pbxis_result = @pbxis_ws.log_off agent, @queue.name
     rescue => e
       flash[:alert] = e.message
     end

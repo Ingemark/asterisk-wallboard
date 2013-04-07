@@ -3,23 +3,25 @@ module Pbxis
   
   class PbxisWS
     
-    HOST_ADDR = "http://#{Settings.pbxisws[:host]}:#{Settings.pbxisws[:port]}"
+    def initialize(host, port)
+      @host_addr = "http://#{host}:#{port}"
+    end
 
-    def self.get_ticket(queues, agents)
+    def get_ticket(queues, agents)
       params = {
         :queues => queues,
         :agents => agents
       }
-      RestClient.post("#{HOST_ADDR}/ticket", params.to_json, :content_type => :json).to_str.gsub('"', '')
+      RestClient.post("#{@host_addr}/ticket", params.to_json, :content_type => :json).to_str.gsub('"', '')
     end
         
-    def self.log_on(agent, queue)
+    def log_on(agent, queue)
       params = {
         :queue => queue,
         :agent => agent
       }
       begin
-          response = ActiveSupport::JSON.decode(RestClient.post("#{HOST_ADDR}/queue/add", params.to_json, :content_type => :json))
+          response = ActiveSupport::JSON.decode(RestClient.post("#{@host_addr}/queue/add", params.to_json, :content_type => :json))
           if response["response"] == "Error"
             raise response["response"]
           end
@@ -29,13 +31,13 @@ module Pbxis
       end
     end
     
-    def self.log_off(agent, queue)
+    def log_off(agent, queue)
       params = {
         :queue => queue,
         :agent => agent
       }
       begin
-          response = ActiveSupport::JSON.decode(RestClient.post("#{HOST_ADDR}/queue/remove", params.to_json, :content_type => :json))
+          response = ActiveSupport::JSON.decode(RestClient.post("#{@host_addr}/queue/remove", params.to_json, :content_type => :json))
           if response["response"] == "Error"
             raise response["response"]
           end
@@ -45,19 +47,18 @@ module Pbxis
       end
     end
     
-    def self.get_status queue
-      status = ActiveSupport::JSON.decode(RestClient.get("#{HOST_ADDR}/queue/status?queue=#{queue.to_s}"))[0]
+    def get_status queue
+      status = ActiveSupport::JSON.decode(RestClient.get("#{@host_addr}/queue/status?queue=#{queue.to_s}"))[0]
       
-      # transform result
-      status["members"] = Hash[status["members"].map { |m| [m["memberName"].gsub("SIP/", ""), m] }]
-      status["members"].each_value { |m| m["memberName"] = m["memberName"].gsub("SIP/", "") }
+      # transform result to hash with queue names as keys
+      status["members"] = Hash[status["members"].map { |m| [m["agent"], m] }]
       status
     end
     
-    def self.reset_queue_stats(queue)
+    def reset_queue_stats(queue)
       params = {:queue => queue}
       begin
-          response = ActiveSupport::JSON.decode(RestClient.post("#{HOST_ADDR}/queue/reset", params.to_json, :content_type => :json))
+          response = ActiveSupport::JSON.decode(RestClient.post("#{@host_addr}/queue/reset", params.to_json, :content_type => :json))
           if response["response"] == "Error"
             raise response["response"]
           end
@@ -65,6 +66,19 @@ module Pbxis
       rescue => e
         raise "An error occurred while trying to reset stats on queue #{queue}: #{e.message}"
       end
+    end
+  end
+  
+  class PbxisWSCached < PbxisWS
+    def get_status(queue)
+      Rails.cache.fetch(queue) do
+        super
+      end
+    end
+    
+    def reset_queue_stats(queue)
+      super
+      Rails.cache.delete(queue)
     end
   end
 end
