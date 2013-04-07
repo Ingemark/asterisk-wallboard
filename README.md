@@ -28,5 +28,3 @@ Authentication is implemented using [Devise](https://github.com/plataformatec/de
 implemented using [CanCan](https://github.com/ryanb/cancan).
 
 ## TODO
-* Caching
-* Clear statistics
