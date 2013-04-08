@@ -13,6 +13,7 @@ WallboardSystem::Application.routes.draw do
   match "/manager" => "manager#index"
   match "/manager/agent-logoff/:agent_id/:queue" => "manager#agent_logoff", :as => "manager_agent_logoff"
   match "/manager/reset-queue-stats/:queue" => "manager#reset_queue_stats", :as => "manager_reset_queue_stats"
+  match "/manager/refresh-stats" => "manager#refresh_stats", :as => "manager_refresh_stats"
   
   # Agent routes
   match "/agent" => "agent#index"

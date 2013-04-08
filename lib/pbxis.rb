@@ -1,12 +1,15 @@
 # Module provides API for pbxis-ws.
 module Pbxis
   
+  # Class implements API to pbxis-ws.
   class PbxisWS
     
+    # Initializer sets pbxis-ws host and port received as arguments.
     def initialize(host, port)
       @host_addr = "http://#{host}:#{port}"
     end
 
+    # Method gets ticket for given queues and agents. Ticket is a string.
     def get_ticket(queues, agents)
       params = {
         :queues => queues,
@@ -14,7 +17,8 @@ module Pbxis
       }
       RestClient.post("#{@host_addr}/ticket", params.to_json, :content_type => :json).to_str.gsub('"', '')
     end
-        
+    
+    # Method logs agent on the queue
     def log_on(agent, queue)
       params = {
         :queue => queue,
@@ -31,6 +35,7 @@ module Pbxis
       end
     end
     
+    # Method logs agent off the queue
     def log_off(agent, queue)
       params = {
         :queue => queue,
@@ -47,6 +52,7 @@ module Pbxis
       end
     end
     
+    # Method fetches queue status, i.e. statistics.
     def get_status queue
       status = ActiveSupport::JSON.decode(RestClient.get("#{@host_addr}/queue/status?queue=#{queue.to_s}"))[0]
       
@@ -55,6 +61,7 @@ module Pbxis
       status
     end
     
+    # Method resets queue statistics.
     def reset_queue_stats(queue)
       params = {:queue => queue}
       begin
@@ -69,7 +76,10 @@ module Pbxis
     end
   end
   
+  # Class overrides class PbxisWS and adds caching to it's methods get_status 
+  # and reset_queue_status.
   class PbxisWSCached < PbxisWS
+    
     def get_status(queue)
       Rails.cache.fetch(queue) do
         super

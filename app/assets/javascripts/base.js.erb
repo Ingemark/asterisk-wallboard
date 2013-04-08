@@ -74,3 +74,40 @@ function show_notice(msg, level){
     $notice.append(msg);
     $('div#notices').append($notice);
 }
+
+/**
+ * Function makes ajax request to refresh stats.
+ */
+function refresh_stats(){    
+    var jqxhr =  $.get('<%= Rails.application.routes.url_helpers.manager_refresh_stats_path %>').fail(function() { 
+         console.log("Error trying to refresh stats.");
+    });
+}
+
+/**
+ * Function changes the innerHTML of given element with given value
+ * and if new value is different than the old one, it highlights
+ * the element.
+ */
+function change_and_highlight(el, val){
+    var color = "#ffc40d";
+    var timeout = 2000;
+    if(el.html() != val)
+        el.html(val).effect("highlight", {"color": color}, timeout);
+}
+
+/**
+ * Entry point
+ */
+$(document).ready(function(){
+    // Connect to pbxis-ws
+    pbxis_connect(getCookie("pbxis_ticket"));
+    
+    // Set stats refresh interval
+    <% if Settings.pbxisws[:refresh_interval] > Rails.application.config.cache_store[2][:expires_in].value %>
+        var timeout = <%= Settings.pbxisws[:refresh_interval]  %>
+    <% else %>
+        var timeout = <%= Rails.application.config.cache_store[2][:expires_in].value  %>
+    <% end %>
+    window.setInterval("refresh_stats()", timeout);
+});

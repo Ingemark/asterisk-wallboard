@@ -12,6 +12,7 @@ class ManagerController < ApplicationController
     @queues = PbxQueue.order "name"
     @agents = User.where(:role => "agent").order "extension"
 
+    # Aquire ticket
     if !@queues.empty? && !cookies.has_key?(:pbxis_ticket)
       begin
         cookies[:pbxis_ticket] = @pbxis_ws.get_ticket(@queues.map { |q| q.name }, @agents.map { |a| a.extension })
@@ -37,6 +38,7 @@ class ManagerController < ApplicationController
     end
   end
   
+  # Action loggs agent off the queue
   def agent_logoff
     begin
       PbxQueue.where(:name => params[:queue])[0]
@@ -51,6 +53,7 @@ class ManagerController < ApplicationController
     end
   end
   
+  # Action resets queue statistics and updates the view with new statistics
   def reset_queue_stats
     begin
       queue = PbxQueue.where(:name => params[:queue])[0]
@@ -60,6 +63,24 @@ class ManagerController < ApplicationController
       flash[:alert] = e.message
     end
     
+    respond_to do |format|
+      format.js
+    end
+  end
+  
+  def refresh_stats
+    begin
+      queues = PbxQueue.order "name"
+      @queue_statuses = {}
+      queues.each do |queue|
+        @queue_statuses[queue.name] = Rails.cache.fetch(queue.name) do
+          @pbxis_ws.get_status queue.name
+        end
+      end
+    rescue => e
+      flash[:alert] = e.message
+    end
+
     respond_to do |format|
       format.js
     end

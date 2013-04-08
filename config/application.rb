@@ -73,6 +73,10 @@ module WallboardSystem
     # Global enable/disable all memcached usage
     config.perform_caching = true
     # The underlying cache store to use.
-    config.cache_store = :dalli_store, 'localhost:11211', { :namespace => "AsteriskWallboard", :expires_in => 1.hour, :compress => true }
+    config.cache_store = :dalli_store, 'localhost:11211', { 
+      :namespace => "AsteriskWallboard", 
+      :expires_in => 20.seconds, # seconds
+      :compress => true }
+
   end
 end
