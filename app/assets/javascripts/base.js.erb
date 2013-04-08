@@ -97,17 +97,35 @@ function change_and_highlight(el, val){
 }
 
 /**
+ * Function fetches cookie value for the given name.
+ */
+function getCookie(c_name){
+    var x,y,cookies=document.cookie.split(";");
+    for (var i = 0; i < cookies.length; i++){
+        name=cookies[i].substr(0,cookies[i].indexOf("="));
+        value=cookies[i].substr(cookies[i].indexOf("=")+1);
+        name=name.replace(/^\s+|\s+$/g,"");
+        if (name==c_name){
+            return unescape(value);
+        }
+    }
+}
+
+/**
  * Entry point
  */
 $(document).ready(function(){
     // Connect to pbxis-ws
-    pbxis_connect(getCookie("pbxis_ticket"));
+    if(getCookie("pbxis_ticket") != undefined)
+        pbxis_connect(getCookie("pbxis_ticket"));
     
-    // Set stats refresh interval
-    <% if Settings.pbxisws[:refresh_interval] > Rails.application.config.cache_store[2][:expires_in].value %>
-        var timeout = <%= Settings.pbxisws[:refresh_interval]  %>
-    <% else %>
-        var timeout = <%= Rails.application.config.cache_store[2][:expires_in].value  %>
-    <% end %>
-    window.setInterval("refresh_stats()", timeout);
+    if(getCookie("_wallboard-system_session") != undefined){
+        // Set stats refresh interval
+        <% if Settings.pbxisws[:refresh_interval] > Rails.application.config.cache_store[2][:expires_in].value %>
+            var timeout = <%= Settings.pbxisws[:refresh_interval]  %> * 1000;
+        <% else %>
+            var timeout = <%= Rails.application.config.cache_store[2][:expires_in].value  %> * 1000;
+        <% end %>
+        window.setInterval("refresh_stats()", timeout);
+    }
 });

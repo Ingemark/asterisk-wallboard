@@ -69,15 +69,3 @@ function pbxis_connect(ticket) {
         console.log('WebSocket Error ' + error);
     };
 }
-
-function getCookie(c_name){
-    var x,y,cookies=document.cookie.split(";");
-    for (var i = 0; i < cookies.length; i++){
-        name=cookies[i].substr(0,cookies[i].indexOf("="));
-        value=cookies[i].substr(cookies[i].indexOf("=")+1);
-        name=name.replace(/^\s+|\s+$/g,"");
-        if (name==c_name){
-            return unescape(value);
-        }
-    }
-}
