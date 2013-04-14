@@ -2,7 +2,7 @@
 
 <div class="container-fluid">
 
-<% if @queue_statuses.empty? %>
+<% if !@queue_statuses.empty? %>
 <!-- Table showing queues statuses -->
 <h3>Queues statuses</h3>
 <table id="queue-statuses" class="table table-striped table-bordered table-condensed">
@@ -51,10 +51,12 @@
             <% end %>
         </tr>
         <tr>
+        <% @queue_statuses.length.times do %>
             <th>Agent Status</th>
             <th>Extension Status</th>
             <th>Calls Taken</th>
             <th>Penalty</th>
+        <% end %>
         </tr>
     </thead>
     <tbody>
