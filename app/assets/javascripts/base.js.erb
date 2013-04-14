@@ -119,7 +119,7 @@ $(document).ready(function(){
     if(getCookie("pbxis_ticket") != undefined)
         pbxis_connect(getCookie("pbxis_ticket"));
     
-    if(getCookie("_wallboard-system_session") != undefined){
+    if(getCookie("signed_in") != undefined){
         // Set stats refresh interval
         <% if Settings.pbxisws[:refresh_interval] > Rails.application.config.cache_store[2][:expires_in].value %>
             var timeout = <%= Settings.pbxisws[:refresh_interval]  %> * 1000;
