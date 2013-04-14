@@ -1,3 +1,4 @@
 pbxisws:
    host: <address>
    port: <port>
+   refresh_interval: 20 # pbxis-ws queue stats refresh interval in seconds
