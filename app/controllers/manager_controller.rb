@@ -41,7 +41,7 @@ class ManagerController < ApplicationController
   # Action loggs agent off the queue
   def agent_logoff
     begin
-      PbxQueue.where(:name => params[:queue])[0]
+      queue = PbxQueue.where(:name => params[:queue])[0]
       agent = User.find(params[:agent_id])
       @pbxis_ws.log_off agent.extension, queue.name
     rescue => e
