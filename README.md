@@ -37,10 +37,10 @@ in defined namespace and for defined time. Settings are located in file *config/
 
 #Installation And Configuration
 ##Prerequisits
-*[rvm](https://github.com/wayneeseguin/rvm)
-*[Asterisk PBX](http://www.asterisk.org/)
-*[pbxis-ws](https://github.com/Inge-mark/pbxis-ws)
-*[memcached](https://github.com/memcached/memcached)
+* [rvm](https://github.com/wayneeseguin/rvm)
+* [Asterisk PBX](http://www.asterisk.org/)
+* [pbxis-ws](https://github.com/Inge-mark/pbxis-ws)
+* [memcached](https://github.com/memcached/memcached)
 
 ##Database
 Database settings are located in file *config/database.yml*.
