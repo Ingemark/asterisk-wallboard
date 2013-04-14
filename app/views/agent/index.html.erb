@@ -5,48 +5,7 @@
         
         <!-- Extension status box -->
         <div class="span2">
-          <div id="agent-phone-status">
-            <div class="navbar navbar-info">
-                <div class="navbar-inner">
-                    <div class="container-fluid">
-                        <a class="brand" href="#">
-                            <small>Extension status</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <table class="table">
-                <tbody>
-                    <tr>
-                        <td>Extension:</td>
-                        <td><%= current_user.extension %></td>
-                    </tr>
-                    <tr>
-                        <td>Status:</td>
-                        <td data-ext-status="<%= current_user.extension %>">N/A</td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <!-- Active call status -->
-            <table id="active-call-status" class="table table-bordered call" style="display:none;">
-                <thead>
-                    <tr>
-                        <th colspan="2">Active Call Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Number:</td>
-                        <td data-property="number">N/A</td>
-                    </tr>
-                    <tr>
-                        <td>Name:</td>
-                        <td data-property="name">N/A</td>
-                    </tr>
-                </tbody>
-            </table>
-          </div>
+          <%= render 'shared/ext_status' %>
         </div>
         
         <!-- Queue status table -->

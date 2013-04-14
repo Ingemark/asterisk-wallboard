@@ -1,120 +1,129 @@
 <% content_for :view_role do %>Manager<% end %>
 
 <div class="container-fluid">
-
-<% if !@queue_statuses.empty? %>
-<!-- Table showing queues statuses -->
-<h3>Queues statuses</h3>
-<table id="queue-statuses" class="table table-striped table-bordered table-condensed">
-    <thead>
-        <tr>
-            <th>Queueu</th>
-            <th>Queueu Count</th>
-            <th>Abandoned</th>
-            <th>Completed</th>
-            <th>Hold Time</th>
-            <th>Max</th>
-            <th>Talk Time</th>
-            <th class="action-col">Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        <% @queue_statuses.each do |queue_name, status| %>
-        <tr data-queue="<%= queue_name %>">
-            <td><%= queue_name %></td>
-            <td data-property="count">N/A</td>
-            <td data-property="abandoned"><%= status["abandoned"] %></td>
-            <td data-property="completed"><%= status["completed"] %></td>
-            <td data-property="holdTime"><%= status["holdTime"] %></td>
-            <td data-property="max"><%= status["max"] %></td>
-            <td data-property="talkTime"><%= status["talkTime"] %></td>
-            <td>
-               <%= button_to 'Reset Stats', manager_reset_queue_stats_path(:queue => queue_name), {:class => 'btn', :remote => true } %>
-            </td>
-        </tr>
-        <% end %>
-    </tbody>
-</table>
-
-<!-- Table showing agents statuses -->
-<h3>Agents statuses</h3>
-<table id="agent-statuses" class="table table-striped table-bordered table-condensed">
-    <thead>
-        <tr>
-            <th rowspan="3">Agent</th>
-            <th colspan="<%= @queue_statuses.length * 4 %>">Queues</th>
-            <th rowspan="3" class="action-col">Action</th>
-        </tr>
-        <tr>
-            <% @queue_statuses.each do |queue_name, status| %>
-                <th colspan="4"><%= queue_name %></th>
-            <% end %>
-        </tr>
-        <tr>
-        <% @queue_statuses.length.times do %>
-            <th>Agent Status</th>
-            <th>Extension Status</th>
-            <th>Calls Taken</th>
-            <th>Penalty</th>
-        <% end %>
-        </tr>
-    </thead>
-    <tbody>
-        <% @agents.each do |agent| %>
-            <tr data-agent="<%= agent.extension %>">
-                <!-- Agent -->
-                <td><%= agent.extension %></td>
-                
-                <!-- Status -->
-                <% @queue_statuses.each do |queue_name, status| %>
-                    <% if status["members"].has_key? agent.extension %>
-                        <td data-queue-status="<%= "#{queue_name}-#{agent.extension}" %>"><%= status["members"][agent.extension]["status"] %></td>
-                        <td data-ext-status="<%= agent.extension %>">N/A</td>
-                        <td data-property="callsTaken"><%= status["members"][agent.extension]["callsTaken"] %></td>
-                        <td data-property="penalty"><%= status["members"][agent.extension]["penalty"] %></td>
-                    <% else %>
-                        <td data-queue-status="<%= "#{queue_name}-#{agent.extension}" %>">Logged Off</td>
-                        <td>N/A</td>
-                        <td>N/A</td>
-                        <td>N/A</td>
+    <div class="row-fluid">
+        
+        <!-- Extension status box -->
+        <div class="span2">
+          <%= render 'shared/ext_status' %>
+        </div>
+    
+        <div class="span10">
+            <% if !@queue_statuses.empty? %>
+            <!-- Table showing queues statuses -->
+            <h3>Queues statuses</h3>
+            <table id="queue-statuses" class="table table-striped table-bordered table-condensed">
+                <thead>
+                    <tr>
+                        <th>Queueu</th>
+                        <th>Queueu Count</th>
+                        <th>Abandoned</th>
+                        <th>Completed</th>
+                        <th>Hold Time</th>
+                        <th>Max</th>
+                        <th>Talk Time</th>
+                        <th class="action-col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% @queue_statuses.each do |queue_name, status| %>
+                    <tr data-queue="<%= queue_name %>">
+                        <td><%= queue_name %></td>
+                        <td data-property="count">N/A</td>
+                        <td data-property="abandoned"><%= status["abandoned"] %></td>
+                        <td data-property="completed"><%= status["completed"] %></td>
+                        <td data-property="holdTime"><%= status["holdTime"] %></td>
+                        <td data-property="max"><%= status["max"] %></td>
+                        <td data-property="talkTime"><%= status["talkTime"] %></td>
+                        <td>
+                           <%= button_to 'Reset Stats', manager_reset_queue_stats_path(:queue => queue_name), {:class => 'btn', :remote => true } %>
+                        </td>
+                    </tr>
                     <% end %>
-                <% end %>
-                
-                <!-- Actions -->
-                <td class="action-col">
-                    <div class="btn-group" data-agent="<%= agent.extension %>">
-                        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Action<span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li class="dropdown-submenu pull-left 
-                            <% if @queue_statuses.select { |key, value| value["members"].has_key? agent.extension }.empty? %>hidden<% end %>"
-                            data-action="logoff">
-                                <a tabindex="-1" href="#">Log Off</a>
-                                <ul class="dropdown-menu">
-                                    <% @queues.each do |queue| %>
-                                        <% if @queue_statuses[queue.name]["members"].has_key? agent.extension %>
-                                        <li>
-                                        <% else %>
-                                        <li class="hidden">
-                                        <% end %>
-                                        <%= link_to queue.name, manager_agent_logoff_path(agent.id, queue.name), 
-                                            {:data => { :'queue' => "#{queue.name}" }, :tabindex => -1, :remote => true} %>
+                </tbody>
+            </table>
+            
+            <!-- Table showing agents statuses -->
+            <h3>Agents statuses</h3>
+            <table id="agent-statuses" class="table table-striped table-bordered table-condensed">
+                <thead>
+                    <tr>
+                        <th rowspan="3">Agent</th>
+                        <th colspan="<%= @queue_statuses.length * 4 %>">Queues</th>
+                        <th rowspan="3" class="action-col">Action</th>
+                    </tr>
+                    <tr>
+                        <% @queue_statuses.each do |queue_name, status| %>
+                            <th colspan="4"><%= queue_name %></th>
+                        <% end %>
+                    </tr>
+                    <tr>
+                    <% @queue_statuses.length.times do %>
+                        <th>Agent Status</th>
+                        <th>Extension Status</th>
+                        <th>Calls Taken</th>
+                        <th>Penalty</th>
+                    <% end %>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% @agents.each do |agent| %>
+                        <tr data-agent="<%= agent.extension %>">
+                            <!-- Agent -->
+                            <td><%= agent.extension %></td>
+                            
+                            <!-- Status -->
+                            <% @queue_statuses.each do |queue_name, status| %>
+                                <% if status["members"].has_key? agent.extension %>
+                                    <td data-queue-status="<%= "#{queue_name}-#{agent.extension}" %>"><%= status["members"][agent.extension]["status"] %></td>
+                                    <td data-ext-status="<%= agent.extension %>">N/A</td>
+                                    <td data-property="callsTaken"><%= status["members"][agent.extension]["callsTaken"] %></td>
+                                    <td data-property="penalty"><%= status["members"][agent.extension]["penalty"] %></td>
+                                <% else %>
+                                    <td data-queue-status="<%= "#{queue_name}-#{agent.extension}" %>">Logged Off</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                <% end %>
+                            <% end %>
+                            
+                            <!-- Actions -->
+                            <td class="action-col">
+                                <div class="btn-group" data-agent="<%= agent.extension %>">
+                                    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Action<span class="caret"></span></a>
+                                    <ul class="dropdown-menu">
+                                        <li class="dropdown-submenu pull-left 
+                                        <% if @queue_statuses.select { |key, value| value["members"].has_key? agent.extension }.empty? %>hidden<% end %>"
+                                        data-action="logoff">
+                                            <a tabindex="-1" href="#">Log Off</a>
+                                            <ul class="dropdown-menu">
+                                                <% @queues.each do |queue| %>
+                                                    <% if @queue_statuses[queue.name]["members"].has_key? agent.extension %>
+                                                    <li>
+                                                    <% else %>
+                                                    <li class="hidden">
+                                                    <% end %>
+                                                    <%= link_to queue.name, manager_agent_logoff_path(agent.id, queue.name), 
+                                                        {:data => { :'queue' => "#{queue.name}" }, :tabindex => -1, :remote => true} %>
+                                                    </li>
+                                                <% end %>
+                                            </ul>
                                         </li>
-                                    <% end %>
-                                </ul>
-                            </li>
-                            <li><a tabindex="-1" href="#">Whisper</a></li>
-                            <li><a tabindex="-1" href="#">Eavesdrop</a></li>
-                            <li><a tabindex="-1" href="#">Record</a></li>
-                        </ul>
-                    </div>
-                </td>
-            </tr>
-        <% end %>
-    </tbody>
-</table>
-<% else %>
-<div class="alert alert-block">
-  <h4>No queues defined!</h4>
-</div>
-<% end %>
+                                        <li><a tabindex="-1" href="#">Whisper</a></li>
+                                        <li><a tabindex="-1" href="#">Eavesdrop</a></li>
+                                        <li><a tabindex="-1" href="#">Record</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    <% end %>
+                </tbody>
+            </table>
+            <% else %>
+            <div class="alert alert-block">
+              <h4>No queues defined!</h4>
+            </div>
+            <% end %>
+        </div>
+    </div>
 </div>
