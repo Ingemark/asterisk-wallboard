@@ -73,10 +73,21 @@ module WallboardSystem
     # Global enable/disable all memcached usage
     config.perform_caching = true
     # The underlying cache store to use.
-    config.cache_store = :dalli_store, 'localhost:11211', { 
-      :namespace => "AsteriskWallboard", 
+    config.cache_store = :dalli_store, 
+      'localhost:11211', # host address and port 
+      {:namespace => "AsteriskWallboard", 
       :expires_in => 20.seconds, # seconds
       :compress => true }
 
+    # Action Mailer for SMTP
+    #config.action_mailer.delivery_method = :smtp
+    #config.action_mailer.smtp_settings = {
+    #  :address              => "<host>",
+    #  :port                 => 000,
+    #  :domain               => '<domain>',
+    #  :user_name            => '<username>',
+    #  :password             => '<password>',
+    #  :authentication       => 'plain',
+    #  :enable_starttls_auto => true  }
   end
 end
