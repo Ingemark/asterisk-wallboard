@@ -35,7 +35,7 @@ Cache store used is [Dalli](https://github.com/mperham/dalli) client for [memcac
 It is used for caching queue statistics to reduce number of requests done to the pbxis-ws. Cache is stored in memcached server
 in defined namespace and for defined time. Settings are located in file *config/application.rb*
 
-###Installation And Configuration
+#Installation And Configuration
 ##Prerequisits
 *[rvm](https://github.com/wayneeseguin/rvm)
 *[Asterisk PBX](http://www.asterisk.org/)
