@@ -9,6 +9,9 @@ WallboardSystem::Application.routes.draw do
     end
   mount RailsAdmin::Engine => '/admin', :as => 'rails_admin'
 
+  # Home controller
+  match "/refresh-stats" => "home#refresh_stats", :as => "refresh_stats"
+  
   # Manager routes
   match "/manager" => "manager#index"
   match "/manager/agent-logoff/:agent_id/:queue" => "manager#agent_logoff", :as => "manager_agent_logoff"
@@ -19,4 +22,6 @@ WallboardSystem::Application.routes.draw do
   match "/agent" => "agent#index"
   match "/agent/logon/:queue_id" => "agent#logon", :as => "agent_logon"
   match "/agent/logoff/:queue_id" => "agent#logoff", :as => "agent_logoff"
+  match "/agent/refresh-stats" => "agent#refresh_stats", :as => "agent_refresh_stats"
+  
 end

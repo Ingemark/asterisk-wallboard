@@ -77,9 +77,7 @@ class ManagerController < ApplicationController
       queues = PbxQueue.order "name"
       @queue_statuses = {}
       queues.each do |queue|
-        @queue_statuses[queue.name] = Rails.cache.fetch(queue.name) do
-          @pbxis_ws.get_status queue.name
-        end
+        @queue_statuses[queue.name] = @pbxis_ws.get_status queue.name
       end
     rescue => e
       flash[:alert] = e.message

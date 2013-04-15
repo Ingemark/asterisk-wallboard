@@ -69,4 +69,20 @@ class AgentController < ApplicationController
       format.js
     end
   end
+  
+  def refresh_stats
+    begin
+      queues = current_user.pbx_queues
+      @queue_statuses = {}
+      queues.each do |queue|
+        @queue_statuses[queue.name] = @pbxis_ws.get_status queue.name
+      end
+    rescue => e
+      flash[:alert] = e.message
+    end
+
+    respond_to do |format|
+      format.js
+    end
+  end
 end

@@ -79,7 +79,7 @@ function show_notice(msg, level){
  * Function makes ajax request to refresh stats.
  */
 function refresh_stats(){    
-    var jqxhr =  $.get('<%= Rails.application.routes.url_helpers.manager_refresh_stats_path %>').fail(function() { 
+    var jqxhr =  $.get('<%= Rails.application.routes.url_helpers.refresh_stats_path %>').fail(function() { 
          console.log("Error trying to refresh stats.");
     });
 }
@@ -89,12 +89,17 @@ function refresh_stats(){
  * and if new value is different than the old one, it highlights
  * the element.
  */
-function change_and_highlight(el, val){
-    var color = "#ffc40d";
-    var timeout = 2000;
-    if(el.html() != val)
-        el.html(val).effect("highlight", {"color": color}, timeout);
-}
+(function( $ ) {
+  $.fn.change_and_highlight = function(val, options) {
+    var settings = $.extend( {
+      'color' : '#ffc40d',
+      'timeout' : 3000
+    }, options);
+    
+    if(this.html() != val)
+        this.html(val).effect("highlight", {"color": options.color}, options.timeout);
+  };
+})( jQuery );
 
 /**
  * Function fetches cookie value for the given name.

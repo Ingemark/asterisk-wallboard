@@ -19,10 +19,10 @@ function pbx_extension_status(agent, status) {
     $('[data-ext-status="' + agent + '"]').html(status);
 }
 function pbx_queue_count(queue, count) {
-    $('tr[data-queue="' + queue + '"] td[data-property="count"]').html(count);
+    $('tr[data-queue="' + queue + '"] td[data-property="count"]').change_and_highlight(count, {});
 }
 function pbx_agent_status(agent, queue, status) {
-    $('[data-queue-status="' + queue + '-' + agent + '"]').html(status);
+    $('[data-queue-status="' + queue + '-' + agent + '"]').change_and_highlight(status, {});
     if(status == "loggedoff"){
         remove_queue_logoff_action(queue, agent);
         toggle_logon_btn(queue);
