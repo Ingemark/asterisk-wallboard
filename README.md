@@ -36,7 +36,7 @@ It is used for caching queue statistics to reduce number of requests done to the
 in defined namespace and for defined time. Settings are located in file *config/application.rb*
 
 #Installation And Configuration
-##Prerequisits
+##Requirements
 * [rvm](https://github.com/wayneeseguin/rvm)
 * [Asterisk PBX](http://www.asterisk.org/)
 * [pbxis-ws](https://github.com/Inge-mark/pbxis-ws)
