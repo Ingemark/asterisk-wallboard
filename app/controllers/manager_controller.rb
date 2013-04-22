@@ -8,35 +8,44 @@ class ManagerController < ApplicationController
   end
   
   def index
+    @agents = User.where(:role => ["agent", "manager"])
+    all_queues = PbxQueue.order "name" # all queues
+    invalid_queues = []
+    @queues = [] # valid queues
     
-    @queues = PbxQueue.order "name"
-    @agents = User.where(:role => "agent").order "extension"
-
-    # Aquire ticket
-    if !@queues.empty? && !cookies.has_key?(:pbxis_ticket)
-      begin
-        agents = @agents.map { |a| a.extension }
-        if current_user.extension
-          agents << current_user.extension
+    # Get initial queue status
+    begin
+      @queue_statuses = {}
+      all_queues.each do |queue|
+        status = @pbxis_ws.get_status queue.name
+        
+        if status != nil
+          @queue_statuses[queue.name] = status
+          @queues << queue
+        else
+          invalid_queues << queue.name
         end
-        cookies[:pbxis_ticket] = @pbxis_ws.get_ticket(@queues.map { |q| q.name }, agents)
+      end
+      
+      if !invalid_queues.empty?
+        flash[:alert] = "Invalid queues: #{invalid_queues.join(', ')}"
+      end
+    rescue => e
+      flash[:alert] = "An error occurred while trying to retrieve queue statuses: #{e.message}"
+    end
+    
+    
+    # Get ticket
+    if !@queues.empty? && !cookies.has_key?(:pbxis_ticket)
+      
+      begin
+        agents = [current_user.extension]
+        cookies[:pbxis_ticket] = @pbxis_ws.get_ticket(@queues.map { |q| q.name }, @agents.map { |a| a.extension })
       rescue => e
         flash[:alert] = "An error occurred while trying to retrieve PBXIS ticket: #{e.message}"
       end
     end
-    
-    # Get initial queue statuses
-    begin
-        @queue_statuses = {}
-        @queues.each do |queue|
-          @queue_statuses[queue.name] = Rails.cache.fetch(queue.name) do
-            @pbxis_ws.get_status queue.name
-          end
-        end
-    rescue => e
-      flash[:alert] = "An error occurred while trying to retrieve queue status: #{e.message}"
-    end
- 
+
     respond_to do |format|
       format.html
     end

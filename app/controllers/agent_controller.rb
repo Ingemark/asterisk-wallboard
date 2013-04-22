@@ -10,31 +10,43 @@ class AgentController < ApplicationController
   # Action renders agent's home view with all the queues he has permission 
   # to monitor together with actions he's allowed to do on those queues.
   def index
-    @queues = current_user.pbx_queues
-
+    all_queues = current_user.pbx_queues # all queues
+    invalid_queues = []
+    @queues = [] # valid queues
+    
+    # Get initial queue status
+    begin
+      @queue_statuses = {}
+      all_queues.each do |queue|
+        status = @pbxis_ws.get_status queue.name
+        
+        if status != nil
+          @queue_statuses[queue.name] = status
+          @queues << queue
+        else
+          invalid_queues << queue.name
+        end
+      end
+      
+      if !invalid_queues.empty?
+        flash[:alert] = "Invalid queues: #{invalid_queues.join(', ')}"
+      end
+    rescue => e
+      flash[:alert] = "An error occurred while trying to retrieve queue statuses: #{e.message}"
+    end
+    
     
     # Get ticket
     if !@queues.empty? && !cookies.has_key?(:pbxis_ticket)
       
       begin
-        queues = @queues.map { |q| q.name }
         agents = [current_user.extension]
-        cookies[:pbxis_ticket] = @pbxis_ws.get_ticket queues, agents
+        cookies[:pbxis_ticket] = @pbxis_ws.get_ticket(@queues.map { |q| q.name }, agents)
       rescue => e
         flash[:alert] = "An error occurred while trying to retrieve PBXIS ticket: #{e.message}"
       end
     end
-    
-    # Get initial queue status
-    begin
-        @queue_statuses = {}
-        @queues.each do |queue|
-          @queue_statuses[queue.name] = @pbxis_ws.get_status queue.name
-        end
-    rescue => e
-      flash[:alert] = "An error occurred while trying to retrieve queue status: #{e.message}"
-    end
-    
+
     respond_to do |format|
       format.html
     end

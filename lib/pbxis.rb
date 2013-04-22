@@ -54,11 +54,16 @@ module Pbxis
     
     # Method fetches queue status, i.e. statistics.
     def get_status queue
-      status = ActiveSupport::JSON.decode(RestClient.get("#{@host_addr}/queue/status?queue=#{queue.to_s}"))[0]
+      begin
+        status = ActiveSupport::JSON.decode(RestClient.get("#{@host_addr}/queue/status?queue=#{queue.to_s}"))[0]
       
-      # transform result to hash with queue names as keys
-      status["members"] = Hash[status["members"].map { |m| [m["agent"], m] }]
-      status
+        # transform result to hash with queue names as keys
+        status["members"] = Hash[status["members"].map { |m| [m["agent"], m] }]
+        status
+
+      rescue
+        return nil
+      end
     end
     
     # Method resets queue statistics.
