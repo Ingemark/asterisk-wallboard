@@ -25,10 +25,16 @@ function pbx_agent_status(agent, queue, status) {
     $('[data-queue-status="' + queue + '-' + agent + '"]').change_and_highlight(status, {});
     if(status == "loggedoff"){
         remove_queue_logoff_action(queue, agent);
-        toggle_logon_btn(queue);
+        toggle_action_item(queue, 'logonoff', 'on');
+        toggle_action_item(queue, 'pause', 'on');
+        $('tr[data-queue="' + queue + '"] td.action-col li[data-action="pause"]').addClass("disabled");
     }else if(status == "loggedon"){
         add_queue_logoff_action(queue, agent);
-        toggle_logoff_btn(queue);
+        toggle_action_item(queue, 'logonoff', 'off');
+        toggle_action_item(queue, 'pause', 'on');
+        $('tr[data-queue="' + queue + '"] td.action-col li[data-action="pause"]').removeClass("disabled");
+    }else if(status == "paused"){
+        toggle_action_item(queue, 'pause', 'off');
     }
 }
 

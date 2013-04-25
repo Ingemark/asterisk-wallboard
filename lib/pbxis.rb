@@ -79,6 +79,40 @@ module Pbxis
         raise "An error occurred while trying to reset stats on queue #{queue}: #{e.message}"
       end
     end
+    
+    # Method pauses agent on queue
+    def pause_agent(agent)
+      params = {
+        :agent => agent,
+        :paused => true
+      }
+      begin
+          response = ActiveSupport::JSON.decode(RestClient.post("#{@host_addr}/queue/pause", params.to_json, :content_type => :json))
+          if response["response"] == "Error"
+            raise response["response"]
+          end
+          response
+      rescue => e
+        raise "An error occurred while trying to pause agent: #{e.message}"
+      end
+    end
+    
+    # Method unpauses agent from queue
+    def unpause_agent(agent)
+      params = {
+        :agent => agent,
+        :paused => false
+      }
+      begin
+          response = ActiveSupport::JSON.decode(RestClient.post("#{@host_addr}/queue/pause", params.to_json, :content_type => :json))
+          if response["response"] == "Error"
+            raise response["response"]
+          end
+          response
+      rescue => e
+        raise "An error occurred while trying to pause agent: #{e.message}"
+      end
+    end
   end
   
   # Class overrides class PbxisWS and adds caching to it's methods get_status 

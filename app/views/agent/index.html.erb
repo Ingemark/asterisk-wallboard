@@ -32,7 +32,7 @@
                         <td><%= queue.name %></td>
                         <td data-queue-status="<%= "#{queue.name}-#{current_user.extension}" %>">
                                 <%= @queue_statuses[queue.name]["members"].has_key?(current_user.extension) ?
-                                @queue_statuses[queue.name]["members"][current_user.extension]["status"]:"Logged Off" %>
+                                @queue_statuses[queue.name]["members"][current_user.extension]["status"]:"loggedoff" %>
                         </td>
                         <td data-property="count">N/A</td>
                         <td data-property="abandoned"><%= @queue_statuses[queue.name]["abandoned"] %></td>
@@ -43,15 +43,79 @@
                         
                         <!-- Queue actions -->
                         <td class="action-col">
-                            <% if !@queue_statuses[queue.name]["members"].has_key?(current_user.extension) %>
-                                <%= button_to 'Log On', agent_logon_path(:queue_id => queue.id), {:class => "btn btn-success logon-btn", :remote => true} %>
-                                <%= button_to 'Log Off', agent_logoff_path(:queue_id => queue.id), {:form_class => "button_to hidden", 
-                                    :class => "btn btn-danger logoff-btn", :remote => true} %>
-                            <% else %>
-                                <%= button_to 'Log Off', agent_logoff_path(:queue_id => queue.id), {:class => "btn btn-danger logoff-btn", :remote => true} %>
-                                <%= button_to 'Log On', agent_logon_path(:queue_id => queue.id), {:form_class => "button_to hidden", 
-                                    :class => "btn btn-success logon-btn", :remote => true} %>
-                            <% end %>
+                            <div class="btn-group">
+                                <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Action<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <!-- Log on/of actions-->
+                                    <% if @queue_statuses[queue.name]["members"].has_key? current_user.extension %>
+                                        <li data-action="logonoff">
+                                            <%= link_to raw('<i class="icon-stop"></i> Log Off'), agent_logoff_path(:queue_id => queue.id), 
+                                                { 
+                                                    :data => { 
+                                                        "on-label" => raw("<i class='icon-play'></i> Log On"),
+                                                        "off-label" => raw("<i class='icon-stop'></i> Log Off"),
+                                                        "on-href" => agent_logon_path(:queue_id => queue.id),
+                                                        "off-href" => agent_logoff_path(:queue_id => queue.id), 
+                                                        }, 
+                                                :tabindex => -1, :remote => true } %>
+                                        </li>
+                                    <% else %>
+                                        <li data-action="logonoff">
+                                            <%= link_to raw('<i class="icon-play"></i> Log On'), agent_logon_path(:queue_id => queue.id), 
+                                                { 
+                                                    :data => { 
+                                                        "on-label" => raw("<i class='icon-play'></i> Log On"),
+                                                        "off-label" => raw("<i class='icon-stop'></i> Log Off"),
+                                                        "on-href" => agent_logon_path(:queue_id => queue.id),
+                                                        "off-href" => agent_logoff_path(:queue_id => queue.id), 
+                                                        }, 
+                                                :tabindex => -1, :remote => true } %>
+                                        </li>
+                                    <% end %>
+                                    
+                                    <!-- Pause/unpause actions -->
+                                    <% if @queue_statuses[queue.name]["members"].has_key? current_user.extension %>
+                                        <% if @queue_statuses[queue.name]["members"][current_user.extension]["paused"] == false %>
+                                            <li data-action="pause">
+                                                <%= link_to raw('<i class="icon-pause"></i> Pause'), agent_pause_path, 
+                                                    { 
+                                                        :data => { 
+                                                            "on-label" => raw("<i class='icon-pause'></i> Pause"),
+                                                            "off-label" => raw("<i class='icon-play'></i> Unpause"),
+                                                            "on-href" => agent_pause_path,
+                                                            "off-href" => agent_unpause_path, 
+                                                            }, 
+                                                    :tabindex => -1, :remote => true } %>
+                                            </li>
+                                        <% else %>
+                                            <li data-action="pause">
+                                                <%= link_to raw('<i class="icon-pause"></i> Unpause'), agent_pause_path, 
+                                                    { 
+                                                        :data => { 
+                                                            "on-label" => raw("<i class='icon-pause'></i> Pause"),
+                                                            "off-label" => raw("<i class='icon-play'></i> Unpause"),
+                                                            "on-href" => agent_pause_path,
+                                                            "off-href" => agent_unpause_path, 
+                                                            }, 
+                                                    :tabindex => -1, :remote => true } %>
+                                            </li>
+                                        <% end %>
+                                    <% else %>
+                                        <!-- Disable pause item if agent is logged off -->
+                                        <li data-action="pause" class="disabled">
+                                            <%= link_to raw('<i class="icon-pause"></i> Pause'), agent_pause_path, 
+                                                { 
+                                                    :data => { 
+                                                        "on-label" => raw("<i class='icon-pause'></i> Pause"),
+                                                        "off-label" => raw("<i class='icon-play'></i> Unpause"),
+                                                        "on-href" => agent_pause_path,
+                                                        "off-href" => agent_unpause_path, 
+                                                        }, 
+                                                :tabindex => -1, :remote => true } %>
+                                        </li>
+                                    <% end %>
+                                </ul>
+                            </div>
                         </td>
                     </tr>
                 <% end %>

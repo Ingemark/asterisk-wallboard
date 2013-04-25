@@ -39,7 +39,6 @@ class ManagerController < ApplicationController
     if !@queues.empty? && !cookies.has_key?(:pbxis_ticket)
       
       begin
-        agents = [current_user.extension]
         cookies[:pbxis_ticket] = @pbxis_ws.get_ticket(@queues.map { |q| q.name }, @agents.map { |a| a.extension })
       rescue => e
         flash[:alert] = "An error occurred while trying to retrieve PBXIS ticket: #{e.message}"

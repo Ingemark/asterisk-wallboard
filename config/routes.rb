@@ -22,6 +22,8 @@ WallboardSystem::Application.routes.draw do
   match "/agent" => "agent#index"
   match "/agent/logon/:queue_id" => "agent#logon", :as => "agent_logon"
   match "/agent/logoff/:queue_id" => "agent#logoff", :as => "agent_logoff"
+  match "/agent/pause" => "agent#pause", :as => "agent_pause"
+  match "/agent/unpause" => "agent#unpause", :as => "agent_unpause"
   match "/agent/refresh-stats" => "agent#refresh_stats", :as => "agent_refresh_stats"
   
 end

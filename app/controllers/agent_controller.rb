@@ -63,7 +63,8 @@ class AgentController < ApplicationController
     end
     
     respond_to do |format|
-      format.js
+      #format.js
+      render :nothing => true
     end
   end
   
@@ -73,6 +74,32 @@ class AgentController < ApplicationController
       agent = current_user.extension
       @queue = PbxQueue.find(params[:queue_id])
       @pbxis_result = @pbxis_ws.log_off agent, @queue.name
+    rescue => e
+      flash[:alert] = e.message
+    end
+    
+    respond_to do |format|
+      format.js
+    end
+  end
+  
+  def pause
+    begin
+      agent = current_user.extension
+      @pbxis_result = @pbxis_ws.pause_agent agent
+    rescue => e
+      flash[:alert] = e.message
+    end
+    
+    respond_to do |format|
+      format.js
+    end
+  end
+  
+  def unpause
+    begin
+      agent = current_user.extension
+      @pbxis_result = @pbxis_ws.unpause_agent agent
     rescue => e
       flash[:alert] = e.message
     end

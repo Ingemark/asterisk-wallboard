@@ -4,25 +4,13 @@
  * 
  * @param {Object} queue - queue which buttons need to be toggled
  */
-function toggle_logon_btn(queue){
-    var $actionCell = $('tr[data-queue="' + queue + '"] td.action-col');
-    $logonBtnForm = $actionCell.find("input.logon-btn").parents("form");
-    $logoffBtnForm = $actionCell.find("input.logoff-btn").parents("form");
-    $logonBtnForm.removeClass("hidden");
-    $logoffBtnForm.addClass("hidden");    
-}
-
-/**
- * Function unhides logoff action button and hides logon button in
- * agent view. 
- * @param {Object} queue - queue which buttons need to be toggled
- */
-function toggle_logoff_btn(queue){
-    var $actionCell = $('tr[data-queue="' + queue + '"] td.action-col');
-    $logonBtnForm = $actionCell.find("input.logon-btn").parents("form");
-    $logoffBtnForm = $actionCell.find("input.logoff-btn").parents("form");
-    $logoffBtnForm.removeClass("hidden");    
-    $logonBtnForm.addClass("hidden");
+function toggle_action_item(queue, action, toggle){
+    if(toggle != "on" && toggle != "off")
+        return false;
+    
+    var $actionItem = $('tr[data-queue="' + queue + '"] td.action-col li[data-action="' + action + '"] a');
+    $actionItem.html($actionItem.attr('data-' + toggle + '-label'));
+    $actionItem.attr('href', $actionItem.attr('data-' + toggle + '-href'));
 }
 
 /**
