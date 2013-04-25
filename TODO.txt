@@ -1,11 +1,9 @@
 Agent:
 - Manager can be an agent also.
-- Align table data: numeric to the right, string center
 - Agent should be able to switch local (perhaps in login form)
 - Show incomming call phone number
 - Show number of missed calls per agent
 - Show hang-up time of last call
-- Pause/unpause action
 
 Forma Manager
 

@@ -18,7 +18,10 @@ class AgentController < ApplicationController
     begin
       @queue_statuses = {}
       all_queues.each do |queue|
-        status = @pbxis_ws.get_status queue.name
+        
+        # Need to use non cached PbxisWS to get most up-to-date status to show on index page
+        pbxis_ws = Pbxis::PbxisWS.new(Settings.pbxisws["host"], Settings.pbxisws["port"])
+        status = pbxis_ws.get_status queue.name
         
         if status != nil
           @queue_statuses[queue.name] = status
@@ -63,8 +66,7 @@ class AgentController < ApplicationController
     end
     
     respond_to do |format|
-      #format.js
-      render :nothing => true
+      format.js
     end
   end
   
@@ -86,7 +88,8 @@ class AgentController < ApplicationController
   def pause
     begin
       agent = current_user.extension
-      @pbxis_result = @pbxis_ws.pause_agent agent
+      @queue = PbxQueue.find(params[:queue_id])
+      @pbxis_result = @pbxis_ws.pause_agent agent, @queue.name
     rescue => e
       flash[:alert] = e.message
     end
@@ -99,7 +102,8 @@ class AgentController < ApplicationController
   def unpause
     begin
       agent = current_user.extension
-      @pbxis_result = @pbxis_ws.unpause_agent agent
+      @queue = PbxQueue.find(params[:queue_id])
+      @pbxis_result = @pbxis_ws.unpause_agent agent, @queue.name
     rescue => e
       flash[:alert] = e.message
     end

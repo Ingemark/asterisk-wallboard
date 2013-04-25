@@ -121,4 +121,9 @@ $(document).ready(function(){
         <% end %>
         window.setInterval("refresh_stats()", timeout);
     }
+    
+    // Disable links in disabled menu items
+    $('table').on('click', 'td.action-col li.disabled > a', function(evt){
+        return false;
+    });
 });

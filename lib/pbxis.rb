@@ -81,9 +81,10 @@ module Pbxis
     end
     
     # Method pauses agent on queue
-    def pause_agent(agent)
+    def pause_agent(agent, queue)
       params = {
         :agent => agent,
+        :queue => queue,
         :paused => true
       }
       begin
@@ -98,9 +99,10 @@ module Pbxis
     end
     
     # Method unpauses agent from queue
-    def unpause_agent(agent)
+    def unpause_agent(agent, queue)
       params = {
         :agent => agent,
+        :queue => queue,
         :paused => false
       }
       begin
