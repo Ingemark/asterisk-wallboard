@@ -69,7 +69,7 @@ div#agent-phone-status {
   padding: 5px;
 }
 
-table.table th.action-col {
+table.table .action-col {
   width: 180px;
   text-align: center;
 }
@@ -84,4 +84,20 @@ table.call {
     background: @blue;
     color: @white;
   }
+}
+
+td.numeric {
+  text-align: right;
+}
+
+td.text {
+  text-align: center;
+}
+
+// Right anchored dropdown menu
+.dropdown-menu.right {
+    left:auto;
+    right:0;
+    &::before {left:auto !important; right:9px;}
+    &::after {left:auto !important; right:10px;}
 }
