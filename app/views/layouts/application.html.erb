@@ -7,28 +7,7 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
-<div class="navbar navbar-fixed-top">
-    <div class="navbar-inner">
-        <div class="container-fluid">
-            <a class="brand" href="">
-                Wallboard System
-                <small><%= yield :view_role %></small>
-            </a>
-            <div class="nav-collapse">
-                <ul class="nav pull-right">
-                    <li>
-                        <%= link_to current_user.email, edit_user_registration_path, { :title => "Change password" } %>
-                    </li>
-                    <li>
-                        <a href="<%= destroy_user_session_path %>" data-method="delete" rel="nofollow">
-                            <span class="label label-important">Log out</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
+<%= render 'shared/navbar' %>
 <div class="container-fluid" id="notices">
     <!-- Space reserved for application notices, alerts etc. -->
     <% if notice %>

@@ -7,5 +7,14 @@
         $queueRow.find('td[data-property="holdTime"]').change_and_highlight('<%= status["holdTime"] %>', {});
         $queueRow.find('td[data-property="max"]').change_and_highlight('<%= status["max"] %>', {});
         $queueRow.find('td[data-property="talkTime"]').change_and_highlight('<%= status["talkTime"] %>', {});
+        
+        <% if status["members"].has_key? current_user.extension %>
+            <% if status["members"][current_user.extension]["lastCall"] > 0 %>
+                $queueRow.find('td[data-property="lastCall"]').change_and_highlight('<%= Time.at(status["members"][current_user.extension]["lastCall"])
+                    .strftime("%d.%m.%Y. %H:%M:%S") %>', {});
+            <% else %>
+                $queueRow.find('td[data-property="lastCall"]').change_and_highlight("N/A", {});
+            <% end %>
+        <% end %>
     <% end %>
 <% end %>

@@ -18,23 +18,31 @@ function pbx_phone_num(agent, num, name) {
 function pbx_extension_status(agent, status) {
     $('[data-ext-status="' + agent + '"]').html(status);
 }
+
 function pbx_queue_count(queue, count) {
     $('tr[data-queue="' + queue + '"] td[data-property="count"]').change_and_highlight(count, {});
 }
+
 function pbx_agent_status(agent, queue, status) {
-    $('[data-queue-status="' + queue + '-' + agent + '"]').change_and_highlight(status, {});
+    $('tr[data-queue="' + queue + '"] td[data-property="status"][data-agent="' + agent + '"]').change_and_highlight(status, {});
     if(status == "loggedoff"){
-        remove_queue_logoff_action(queue, agent);
-        toggle_action_item(queue, 'logonoff', 'on');
-        toggle_action_item(queue, 'pause', 'on');
-        $('tr[data-queue="' + queue + '"] td.action-col li[data-action="pause"]').addClass("disabled");
+        toggle_action_item(queue, agent, 'logonoff', 'on');
+        toggle_action_item(queue, agent, 'pause', 'on');
+        $('li[data-action="pause"][data-queue="' + queue + '"][data-agent="' + agent + '"]').addClass("disabled");
+        $('table#agent-statuses li[data-action="logoff"][data-queue="' + queue + '"][data-agent="' + agent + '"]').addClass("disabled");
+        
+        // Hide agent status in manager view
+        hide_agent_status(agent);
     }else if(status == "loggedon"){
-        add_queue_logoff_action(queue, agent);
-        toggle_action_item(queue, 'logonoff', 'off');
-        toggle_action_item(queue, 'pause', 'on');
-        $('tr[data-queue="' + queue + '"] td.action-col li[data-action="pause"]').removeClass("disabled");
+        toggle_action_item(queue, agent, 'logonoff', 'off');
+        toggle_action_item(queue, agent, 'pause', 'on');
+        $('li[data-action="pause"][data-queue="' + queue + '"][data-agent="' + agent + '"]').removeClass("disabled");
+        $('table#agent-statuses li[data-action="logoff"][data-queue="' + queue + '"][data-agent="' + agent + '"]').removeClass("disabled");
+        
+        // Show agent status in manager view
+        show_agent_status(agent);
     }else if(status == "paused"){
-        toggle_action_item(queue, 'pause', 'off');
+        toggle_action_item(queue, agent, 'pause', 'off');
     }
 }
 

@@ -18,6 +18,12 @@ class Ability
     # Abilities for MANAGER role
     elsif user && user.role == "manager"
       can :manage, :manager
+      can :logon, :agent
+      can :logoff, :agent
+      can :pause, :agent
+      can :unpause, :agent
+      can :edit_ext, :agent
+      can :update_ext, :agent
     end
   end
 end

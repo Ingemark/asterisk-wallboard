@@ -12,7 +12,7 @@
     <tbody>
         <tr>
             <td>Extension:</td>
-            <td><% if current_user.extension %><%= current_user.extension %><% else %>N/A<% end %></td>
+            <td><% if !current_user.extension.empty? %><%= current_user.extension %><% else %>N/A<% end %></td>
         </tr>
         <tr>
             <td>Status:</td>

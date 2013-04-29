@@ -1,0 +1,12 @@
+<h2>Change Extension</h2>
+
+<%= form_for(:user, :url => { :action => "update_ext" }) do |f| %>
+  <%= f.label :extension %>
+  <div><%= f.text_field :extension, :autofocus => true, :placeholder => "Extension" %></div>
+
+  <div><%= f.submit "Update", :class => "btn btn-primary" %></div>
+<% end %>
+
+<div>
+<%= link_to "Cancel", :back %>
+</div>

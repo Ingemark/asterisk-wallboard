@@ -40,7 +40,7 @@ class AgentController < ApplicationController
     
     
     # Get ticket
-    if !@queues.empty? && !cookies.has_key?(:pbxis_ticket)
+    if !@queues.empty?
       
       begin
         agents = [current_user.extension]
@@ -126,6 +126,53 @@ class AgentController < ApplicationController
 
     respond_to do |format|
       format.js
+    end
+  end
+  
+  def edit_ext
+    @user = current_user
+    respond_to do |format|
+      format.html { render :template => 'shared/_edit_ext.html.erb', :layout => 'devise' }
+    end
+  end
+  
+  def update_ext
+    pbxis_ws = Pbxis::PbxisWS.new(Settings.pbxisws["host"], Settings.pbxisws["port"])
+    @user = current_user
+    new_ext = params[:user][:extension]
+    old_ext = @user.extension
+    
+    # Update extension
+    if !@user.update_attributes(:extension => new_ext)
+      flash[:alert] = "Extension already exists"
+      
+      respond_to do |format|
+        format.html { render :template => 'shared/_edit_ext.html.erb', :layout => 'devise' }
+      end
+    else
+      # Re-logon agent to all queues he was logged on before
+      if old_ext != new_ext
+        @user.pbx_queues.each do |queue|
+          
+            status = pbxis_ws.get_status queue.name
+            
+            if status["members"].has_key? old_ext.to_s
+              res = pbxis_ws.log_off old_ext.to_s, queue.name
+              puts "Result: #{res}"
+              
+              if !new_ext.empty?
+                pbxis_ws.log_on new_ext.to_s, queue.name
+                if status["members"][old_ext]["paused"] == true
+                  pbxis_ws.pause_agent new_ext.to_s, queue.name
+                end
+              end
+            end
+        end
+      end
+      
+      respond_to do |format|
+        format.html { redirect_to :root }
+      end
     end
   end
 end

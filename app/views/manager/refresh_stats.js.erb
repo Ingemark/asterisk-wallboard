@@ -8,10 +8,16 @@
         $queueRow.find('td[data-property="max"]').change_and_highlight('<%= status["max"] %>', {});
         $queueRow.find('td[data-property="talkTime"]').change_and_highlight('<%= status["talkTime"] %>', {});
         
+        $queueRow = $('table#agent-statuses tr[data-queue="' +'<%= queue_name %>' + '"]');
         <% status["members"].each do |extension, member| %>
-            var $agentRow = $('table#agent-statuses tr[data-agent="' +'<%= extension %>' + '"]');
-            $agentRow.find('td[data-property="callsTaken"]').change_and_highlight('<%= member["callsTaken"] %>', {});
-            $agentRow.find('td[data-property="penalty"]').change_and_highlight('<%= member["penalty"] %>', {});
+            $queueRow.find('td[data-property="callsTaken"][data-agent="' + <%= extension %> + '"]').change_and_highlight('<%= member["callsTaken"] %>', {});
+            $queueRow.find('td[data-property="penalty"][data-agent="' + <%= extension %> + '"]').change_and_highlight('<%= member["penalty"] %>', {});
+    
+            <% if member["lastCall"] > 0 %>
+                $queueRow.find('td[data-property="lastCall"][data-agent="' + <%= extension %> + '"]').change_and_highlight('<%= Time.at(member["lastCall"]).strftime("%d.%m.%Y. %H:%M:%S") %>', {});
+            <% else %>
+                $queueRow.find('td[data-property="lastCall"][data-agent="' + <%= extension %> + '"]').change_and_highlight("N/A", {});
+            <% end %>
         <% end %>
     <% end %>
 <% end %>

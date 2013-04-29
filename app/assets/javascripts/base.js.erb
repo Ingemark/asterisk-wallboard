@@ -4,47 +4,39 @@
  * 
  * @param {Object} queue - queue which buttons need to be toggled
  */
-function toggle_action_item(queue, action, toggle){
+function toggle_action_item(queue, agent, action, toggle){
     if(toggle != "on" && toggle != "off")
         return false;
     
-    var $actionItem = $('tr[data-queue="' + queue + '"] td.action-col li[data-action="' + action + '"] a');
-    $actionItem.html($actionItem.attr('data-' + toggle + '-label'));
-    $actionItem.attr('href', $actionItem.attr('data-' + toggle + '-href'));
+    var $actionItem = $('li[data-action="' + action + '"][data-queue="' + queue + '"][data-agent="' + agent + '"] a');
+    $.each($actionItem, function(index, value){
+        $(value).html($(value).attr('data-' + toggle + '-label'));
+        $(value).attr('href', $(value).attr('data-' + toggle + '-href'));    
+    });
 }
 
-/**
- * Function unhides logoff button for specified queue and agent in 
- * actions menu in manager view.
- * 
- * @param {Object} queue
- * @param {Object} agent
- */
-function add_queue_logoff_action(queue, agent){
-    var $submenu = $('div.btn-group[data-agent="' + agent + '"] li[data-action="logoff"]');
+function hide_agent_status(agent){
+    var $statuses = $('table#agent-statuses td[data-agent="' + agent + '"][data-property="status"]');
+    var isLoggedOn = false;
+    $.each($statuses, function(index, value){
+        if($(value).html().trim() != "loggedoff"){
+            isLoggedOn = true;
+            return;            
+        }
+    });
     
-    // Unhide logoff submenu if it is hidden
-    if($submenu.hasClass("hidden")){
-        $submenu.removeClass('hidden');
+    if(isLoggedOn == false){
+        var $targetCells = $('table#agent-statuses th[data-agent="' + agent + '"], table#agent-statuses td[data-agent="' + agent + '"]');
+        $targetCells.css('display', '');
+        $targetCells.addClass("hidden");
+           
     }
-    $submenu.find('a[data-queue="' + queue + '"]').parent().removeClass("hidden");
 }
 
-/**
- * Function hides logoff button for specified queue and agent in 
- * actions menu in manager view.
- * 
- * @param {Object} queue
- * @param {Object} agent
- */
-function remove_queue_logoff_action(queue, agent){
-    var $submenu = $('div.btn-group[data-agent="' + agent + '"] li[data-action="logoff"]');
-    $submenu.find('a[data-queue="' + queue + '"]').parent().addClass("hidden");
-    
-    // hide logoff submenu if agent isn't logged to any of the queues
-    if($submenu.find("li:not(.hidden)").length == 0){
-        $submenu.addClass('hidden');
-    }
+function show_agent_status(agent){
+    var $targetCells = $('table#agent-statuses th[data-agent="' + agent + '"], table#agent-statuses td[data-agent="' + agent + '"]');
+    $targetCells.css('display', '');
+    $targetCells.removeClass("hidden");
 }
 
 /**

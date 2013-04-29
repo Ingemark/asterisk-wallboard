@@ -1,15 +1,7 @@
 Agent:
-- Manager can be an agent also.
-- Agent should be able to switch local (perhaps in login form)
-- Show incomming call phone number
-- Show number of missed calls per agent
-- Show hang-up time of last call
+- Show incomming call phone number (to discuss)
+- Show number of missed calls per agent (to discuss)
 
 Forma Manager
 
-- Pause/unpause action
-- Show number of missed calls per agent
-- Show hang-up time of last call
-- Layout queues horizontally, and agents vertically in the table
-- Don't show status of agent that's not assigned to the queue
-- Correct labels: Queueu -> Queue and Queueu Count -> Queue Count
+- Show number of missed calls per agent (to discuss)

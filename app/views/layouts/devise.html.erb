@@ -7,6 +7,10 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
+<% if current_user %>
+<%= render 'shared/navbar' %>
+<% end %>
+
 <div class="container-fluid" id="notices">
     <!-- Space reserved for application notices, alerts etc. -->
     <% if notice %>

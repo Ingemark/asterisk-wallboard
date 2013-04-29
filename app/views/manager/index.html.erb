@@ -1,5 +1,3 @@
-<% content_for :view_role do %>Manager<% end %>
-
 <div class="container-fluid">
     <div class="row-fluid">
         
@@ -15,10 +13,10 @@
             <table id="queue-statuses" class="table table-striped table-bordered table-condensed">
                 <thead>
                     <tr>
-                        <th>Queueu</th>
-                        <th>Queueu Count</th>
+                        <th>Queue</th>
+                        <th>Queue Count</th>
                         <th>Abandoned</th>
-                        <th>Completed</th>
+                        <th>Completed Calls</th>
                         <th>Hold Time</th>
                         <th>Max</th>
                         <th>Talk Time</th>
@@ -26,17 +24,101 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% @queue_statuses.each do |queue_name, status| %>
-                    <tr data-queue="<%= queue_name %>">
-                        <td><%= queue_name %></td>
-                        <td data-property="count">N/A</td>
-                        <td data-property="abandoned"><%= status["abandoned"] %></td>
-                        <td data-property="completed"><%= status["completed"] %></td>
-                        <td data-property="holdTime"><%= status["holdTime"] %></td>
-                        <td data-property="max"><%= status["max"] %></td>
-                        <td data-property="talkTime"><%= status["talkTime"] %></td>
-                        <td>
-                           <%= button_to 'Reset Stats', manager_reset_queue_stats_path(:queue => queue_name), {:class => 'btn', :remote => true } %>
+                    <% @queues.each do |queue| %>
+                    <tr data-queue="<%= queue.name %>">
+                        <td class="text" ><%= queue.name %></td>
+                        <td class="numeric" data-property="count">N/A</td>
+                        <td class="numeric" data-property="abandoned"><%= @queue_statuses[queue.name]["abandoned"] %></td>
+                        <td class="numeric" data-property="completed"><%= @queue_statuses[queue.name]["completed"] %></td>
+                        <td class="numeric" data-property="holdTime"><%= @queue_statuses[queue.name]["holdTime"] %></td>
+                        <td class="numeric" data-property="max"><%= @queue_statuses[queue.name]["max"] %></td>
+                        <td class="numeric" data-property="talkTime"><%= @queue_statuses[queue.name]["talkTime"] %></td>
+
+                        <!-- Queue actions -->
+                        <td class="action-col">
+                            <% if current_user.pbx_queues.include? queue %>
+                            <div class="btn-group">
+                                <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Action<span class="caret"></span></a>
+                                <ul class="dropdown-menu right">
+                                    <% if !current_user.extension.empty? %>
+                                        <!-- Log on/of actions-->
+                                        <% if @queue_statuses[queue.name]["members"].has_key? current_user.extension %>
+                                            <li data-action="logonoff" data-queue="<%= queue.name %>" data-agent="<%= current_user.extension %>">
+                                                <%= link_to raw('<i class="icon-stop"></i> Log Off'), agent_logoff_path(:queue_id => queue.id), 
+                                                    { 
+                                                        :data => { 
+                                                            "on-label" => raw("<i class='icon-play'></i> Log On"),
+                                                            "off-label" => raw("<i class='icon-stop'></i> Log Off"),
+                                                            "on-href" => agent_logon_path(:queue_id => queue.id),
+                                                            "off-href" => agent_logoff_path(:queue_id => queue.id), 
+                                                            }, 
+                                                    :tabindex => -1, :remote => true } %>
+                                            </li>
+                                        <% else %>
+                                            <li data-action="logonoff" data-queue="<%= queue.name %>" data-agent="<%= current_user.extension %>">
+                                                <%= link_to raw('<i class="icon-play"></i> Log On'), agent_logon_path(:queue_id => queue.id), 
+                                                    { 
+                                                        :data => { 
+                                                            "on-label" => raw("<i class='icon-play'></i> Log On"),
+                                                            "off-label" => raw("<i class='icon-stop'></i> Log Off"),
+                                                            "on-href" => agent_logon_path(:queue_id => queue.id),
+                                                            "off-href" => agent_logoff_path(:queue_id => queue.id), 
+                                                            }, 
+                                                    :tabindex => -1, :remote => true } %>
+                                            </li>
+                                        <% end %>
+                                        
+                                        <!-- Pause/unpause actions -->
+                                        <% if @queue_statuses[queue.name]["members"].has_key? current_user.extension %>
+                                            <% if @queue_statuses[queue.name]["members"][current_user.extension]["paused"] == false %>
+                                                <li data-action="pause" data-queue="<%= queue.name %>" data-agent="<%= current_user.extension %>">
+                                                    <%= link_to raw('<i class="icon-pause"></i> Pause'), agent_pause_path(:queue_id => queue.id), 
+                                                        { 
+                                                            :data => { 
+                                                                "on-label" => raw("<i class='icon-pause'></i> Pause"),
+                                                                "off-label" => raw("<i class='icon-play'></i> Unpause"),
+                                                                "on-href" => agent_pause_path(:queue_id => queue.id),
+                                                                "off-href" => agent_unpause_path(:queue_id => queue.id), 
+                                                                }, 
+                                                        :tabindex => -1, :remote => true } %>
+                                                </li>
+                                            <% else %>
+                                                <li data-action="pause" data-queue="<%= queue.name %>" data-agent="<%= current_user.extension %>">
+                                                    <%= link_to raw('<i class="icon-play"></i> Unpause'), agent_unpause_path(:queue_id => queue.id), 
+                                                        { 
+                                                            :data => { 
+                                                                "on-label" => raw("<i class='icon-pause'></i> Pause"),
+                                                                "off-label" => raw("<i class='icon-play'></i> Unpause"),
+                                                                "on-href" => agent_pause_path(:queue_id => queue.id),
+                                                                "off-href" => agent_unpause_path(:queue_id => queue.id), 
+                                                                }, 
+                                                        :tabindex => -1, :remote => true } %>
+                                                </li>
+                                            <% end %>
+                                        <% else %>
+                                            <!-- Disable pause item if agent is logged off -->
+                                            <li data-action="pause" class="disabled" data-queue="<%= queue.name %>" data-agent="<%= current_user.extension %>">
+                                                <%= link_to raw('<i class="icon-pause"></i> Pause'), agent_pause_path(:queue_id => queue.id), 
+                                                    { 
+                                                        :data => { 
+                                                            "on-label" => raw("<i class='icon-pause'></i> Pause"),
+                                                            "off-label" => raw("<i class='icon-play'></i> Unpause"),
+                                                            "on-href" => agent_pause_path(:queue_id => queue.id),
+                                                            "off-href" => agent_unpause_path(:queue_id => queue.id), 
+                                                            }, 
+                                                    :tabindex => -1, :remote => true } %>
+                                            </li>
+                                        <% end %>
+                                    <% end %>
+                                    <li>
+                                        <%= link_to raw('<i class="icon-refresh"></i> Reset Stats'), manager_reset_queue_stats_path(:queue => queue.name), 
+                                            {:tabindex => -1, :remote => true } %>
+                                    </li>
+                                </ul>
+                            </div>
+                            <% else %>
+                                Queue Not Assigned
+                            <% end %>
                         </td>
                     </tr>
                     <% end %>
@@ -48,73 +130,155 @@
             <table id="agent-statuses" class="table table-striped table-bordered table-condensed">
                 <thead>
                     <tr>
-                        <th rowspan="3">Agent</th>
-                        <th colspan="<%= @queue_statuses.length * 4 %>">Queues</th>
-                        <th rowspan="3" class="action-col">Action</th>
+                        <th rowspan="3">Queue</th>
+                        <th id="agents-header" colspan="<%= @agents.length * 4 %>">Agents</th>
                     </tr>
                     <tr>
-                        <% @queue_statuses.each do |queue_name, status| %>
-                            <th colspan="4"><%= queue_name %></th>
-                        <% end %>
-                    </tr>
-                    <tr>
-                    <% @queue_statuses.length.times do %>
-                        <th>Agent Status</th>
-                        <th>Extension Status</th>
-                        <th>Calls Taken</th>
-                        <th>Penalty</th>
-                    <% end %>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% @agents.each do |agent| %>
-                        <tr data-agent="<%= agent.extension %>">
-                            <!-- Agent -->
-                            <td><%= agent.extension %></td>
-                            
-                            <!-- Status -->
-                            <% @queue_statuses.each do |queue_name, status| %>
-                                <% if status["members"].has_key? agent.extension %>
-                                    <td data-queue-status="<%= "#{queue_name}-#{agent.extension}" %>"><%= status["members"][agent.extension]["status"] %></td>
-                                    <td data-ext-status="<%= agent.extension %>">N/A</td>
-                                    <td data-property="callsTaken"><%= status["members"][agent.extension]["callsTaken"] %></td>
-                                    <td data-property="penalty"><%= status["members"][agent.extension]["penalty"] %></td>
-                                <% else %>
-                                    <td data-queue-status="<%= "#{queue_name}-#{agent.extension}" %>">Logged Off</td>
-                                    <td>N/A</td>
-                                    <td>N/A</td>
-                                    <td>N/A</td>
-                                <% end %>
+                        <!-- Agent header is actions drop-down menu -->
+                        <% @agents.each do |agent| %>
+                            <% if @loggedon_agents.include? agent.extension %>
+                            <th data-agent="<%= agent.extension %>" colspan="4">
+                            <% else %>
+                            <th class="hidden" data-agent="<%= agent.extension %>" colspan="4">
                             <% end %>
-                            
-                            <!-- Actions -->
-                            <td class="action-col">
                                 <div class="btn-group" data-agent="<%= agent.extension %>">
-                                    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Action<span class="caret"></span></a>
+                                    <button class="btn"><%= agent.extension %></button>
+                                    <button class="btn dropdown-toggle" data-toggle="dropdown">
+                                        <span class="caret"></span>
+                                    </button>
                                     <ul class="dropdown-menu">
-                                        <li class="dropdown-submenu pull-left 
-                                        <% if @queue_statuses.select { |key, value| value["members"].has_key? agent.extension }.empty? %>hidden<% end %>"
-                                        data-action="logoff">
+                                        <!-- logoff action -->
+                                        <li class="dropdown-submenu">
                                             <a tabindex="-1" href="#">Log Off</a>
                                             <ul class="dropdown-menu">
                                                 <% @queues.each do |queue| %>
-                                                    <% if @queue_statuses[queue.name]["members"].has_key? agent.extension %>
-                                                    <li>
-                                                    <% else %>
-                                                    <li class="hidden">
+                                                    <li  data-action="logoff" data-queue="<%= queue.name %>" data-agent="<%= agent.extension %>"
+                                                    <% if !@queue_statuses[queue.name]["members"].has_key? agent.extension %>
+                                                        class="disabled"
                                                     <% end %>
-                                                    <%= link_to queue.name, manager_agent_logoff_path(agent.id, queue.name), 
+                                                    >
+                                                    <%= link_to raw("<i class='icon-stop'></i> ") + queue.name, manager_agent_logoff_path(agent.id, queue.name), 
                                                         {:data => { :'queue' => "#{queue.name}" }, :tabindex => -1, :remote => true} %>
                                                     </li>
                                                 <% end %>
                                             </ul>
                                         </li>
+                                        
+                                        <!-- pause/unpause action -->
+                                        <li class="dropdown-submenu" data-action="pause">
+                                            <a tabindex="-1" href="#">Pause/Unpause</a>
+                                            <ul class="dropdown-menu">
+                                                <% @queues.each do |queue| %>
+                                                    <% if @queue_statuses[queue.name]["members"].has_key? agent.extension %>
+                                                        <% if @queue_statuses[queue.name]["members"][agent.extension]["paused"] == false %>
+                                                            <li data-action="pause" data-queue="<%= queue.name %>" data-agent="<%= agent.extension %>">
+                                                                <%= link_to raw("<i class='icon-pause'></i> ") + queue.name, 
+                                                                    manager_pause_agent_path(:queue_id => queue.id, :agent_id => agent.id), 
+                                                                    { 
+                                                                        :data => { 
+                                                                            "on-label" => raw("<i class='icon-pause'></i> ") + queue.name,
+                                                                            "off-label" => raw("<i class='icon-play'></i> ") + queue.name,
+                                                                            "on-href" => manager_pause_agent_path(:queue_id => queue.id, :agent_id => agent.id), 
+                                                                            "off-href" => manager_unpause_agent_path(:queue_id => queue.id, :agent_id => agent.id),
+                                                                            }, 
+                                                                    :tabindex => -1, :remote => true } %>
+                                                            </li>
+                                                        <% else %>
+                                                            <li data-action="pause" data-queue="<%= queue.name %>" data-agent="<%= agent.extension %>">
+                                                                <%= link_to raw("<i class='icon-play'></i> ") + queue.name, 
+                                                                    manager_unpause_agent_path(:queue_id => queue.id, :agent_id => agent.id), 
+                                                                    { 
+                                                                        :data => { 
+                                                                            "on-label" => raw("<i class='icon-pause'></i> ") + queue.name,
+                                                                            "off-label" => raw("<i class='icon-play'></i> ") + queue.name,
+                                                                            "on-href" => manager_pause_agent_path(:queue_id => queue.id, :agent_id => agent.id), 
+                                                                            "off-href" => manager_unpause_agent_path(:queue_id => queue.id, :agent_id => agent.id), 
+                                                                            }, 
+                                                                    :tabindex => -1, :remote => true } %>
+                                                            </li>
+                                                        <% end %>
+                                                    <% else %>
+                                                        <!-- Disable pause item if agent is logged off -->
+                                                        <li data-action="pause" class="disabled" data-queue="<%= queue.name %>" data-agent="<%= agent.extension %>">
+                                                            <%= link_to raw("<i class='icon-pause'></i> ") + queue.name,  
+                                                                manager_pause_agent_path(:queue_id => queue.id, :agent_id => agent.id), 
+                                                                { 
+                                                                    :data => { 
+                                                                        "on-label" => raw("<i class='icon-pause'></i> ") + queue.name,
+                                                                        "off-label" => raw("<i class='icon-play'></i> ") + queue.name,
+                                                                        "on-href" => manager_pause_agent_path(:queue_id => queue.id, :agent_id => agent.id), 
+                                                                        "off-href" => manager_unpause_agent_path(:queue_id => queue.id, :agent_id => agent.id), 
+                                                                        }, 
+                                                                :tabindex => -1, :remote => true } %>
+                                                        </li>
+                                                    <% end %>
+                                                <% end %>
+                                            </ul>
+                                        </li>
+                                        
                                         <li><a tabindex="-1" href="#">Whisper</a></li>
                                         <li><a tabindex="-1" href="#">Eavesdrop</a></li>
                                         <li><a tabindex="-1" href="#">Record</a></li>
                                     </ul>
                                 </div>
-                            </td>
+                            </th>
+                        <% end %>
+                    </tr>
+                    <tr>
+                    <% @agents.each do |agent| %>
+                        <% if @loggedon_agents.include? agent.extension %>
+                            <th data-agent="<%= agent.extension %>">Agent Status</th>
+                            <th data-agent="<%= agent.extension %>">Calls Taken</th>
+                            <th data-agent="<%= agent.extension %>">Last Call</th>
+                            <th data-agent="<%= agent.extension %>">Penalty</th>
+                        <% else %>
+                            <th class="hidden" data-agent="<%= agent.extension %>">Agent Status</th>
+                            <th class="hidden" data-agent="<%= agent.extension %>">Calls Taken</th>
+                            <th class="hidden" data-agent="<%= agent.extension %>">Last Call</th>
+                            <th class="hidden" data-agent="<%= agent.extension %>">Penalty</th>
+                        <% end %>
+                    <% end %>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% @queue_statuses.each do |queue_name, status| %>
+                        <tr data-queue="<%= queue_name %>">
+                            <!-- Queue -->
+                            <td class="text"><%= queue_name %></td>
+                            
+                            <!-- Agent Status -->
+                            <% @agents.each do |agent| %>
+                                <% if status["members"].has_key? agent.extension %>
+                                    <td class="text" data-property="status" data-agent="<%= agent.extension %>">
+                                        <%= status["members"][agent.extension]["status"] %>                                        
+                                    </td>
+                                    <td class="numeric" data-property="callsTaken" data-agent="<%= agent.extension %>">
+                                        <%= status["members"][agent.extension]["callsTaken"] %>
+                                    </td>
+                                    <td class="text" data-property="lastCall" data-agent="<%= agent.extension %>">
+                                        <% if status["members"][agent.extension]["lastCall"] > 0 %>
+                                            <%= Time.at(status["members"][agent.extension]["lastCall"]).strftime("%d.%m.%Y. %H:%M:%S") %>
+                                        <% else %>
+                                            N/A
+                                        <% end %>
+                                    </td>
+                                    <td class="numeric" data-property="penalty"  data-agent="<%= agent.extension %>">
+                                        <%= status["members"][agent.extension]["penalty"] %>
+                                    </td>
+                                <% else %>
+                                    <% if @loggedon_agents.include? agent.extension %>
+                                        <td class="text" data-property="status" data-agent="<%= agent.extension %>">loggedoff</td>
+                                        <td class="numeric" data-property="callsTaken" data-agent="<%= agent.extension %>">N/A</td>
+                                        <td class="text" data-property="lastCall" data-agent="<%= agent.extension %>">N/A</td>
+                                        <td class="numeric" data-property="penalty"  data-agent="<%= agent.extension %>">N/A</td>
+                                    <% else %>
+                                        <td class="text hidden" data-property="status" data-agent="<%= agent.extension %>">loggedoff</td>
+                                        <td class="numeric hidden" data-property="callsTaken" data-agent="<%= agent.extension %>">N/A</td>
+                                        <td class="text hidden" data-property="lastCall" data-agent="<%= agent.extension %>">N/A</td>
+                                        <td class="numeric hidden" data-property="penalty"  data-agent="<%= agent.extension %>">N/A</td>
+                                    <% end %>
+                                <% end %>
+                            <% end %>
                         </tr>
                     <% end %>
                 </tbody>

@@ -1,4 +1,4 @@
-class ManagerController < ApplicationController
+class ManagerController < AgentController
   authorize_resource :class => false
   
   def initialize
@@ -8,20 +8,30 @@ class ManagerController < ApplicationController
   end
   
   def index
-    @agents = User.where(:role => ["agent", "manager"])
+    require 'set'
+    
+    pbxis_ws = Pbxis::PbxisWS.new(Settings.pbxisws["host"], Settings.pbxisws["port"])
+    @agents = User.where(:role => ["agent", "manager"]).where("extension <> ''").order "extension" # all agents and managers with extension number
     all_queues = PbxQueue.order "name" # all queues
     invalid_queues = []
     @queues = [] # valid queues
+    @loggedon_agents = Set.new
     
     # Get initial queue status
     begin
       @queue_statuses = {}
       all_queues.each do |queue|
-        status = @pbxis_ws.get_status queue.name
+        status = pbxis_ws.get_status queue.name
         
         if status != nil
           @queue_statuses[queue.name] = status
           @queues << queue
+          
+          # Add agent to the loggedon_agents set
+          status["members"].keys.each do |member|
+            agent = User.where(:extension => member)
+            @loggedon_agents.add member if !agent.empty?
+          end
         else
           invalid_queues << queue.name
         end
@@ -36,10 +46,10 @@ class ManagerController < ApplicationController
     
     
     # Get ticket
-    if !@queues.empty? && !cookies.has_key?(:pbxis_ticket)
+    if !@queues.empty?
       
       begin
-        cookies[:pbxis_ticket] = @pbxis_ws.get_ticket(@queues.map { |q| q.name }, @agents.map { |a| a.extension })
+        cookies[:pbxis_ticket] = pbxis_ws.get_ticket(@queues.map { |q| q.name }, @agents.map { |a| a.extension })
       rescue => e
         flash[:alert] = "An error occurred while trying to retrieve PBXIS ticket: #{e.message}"
       end
@@ -96,4 +106,31 @@ class ManagerController < ApplicationController
     end
   end
   
+  def pause_agent
+    begin
+      agent = User.find(params[:agent_id])
+      @queue = PbxQueue.find(params[:queue_id])
+      @pbxis_result = @pbxis_ws.pause_agent agent.extension, @queue.name
+    rescue => e
+      flash[:alert] = e.message
+    end
+    
+    respond_to do |format|
+      format.js
+    end
+  end
+  
+  def unpause_agent
+    begin
+      agent = User.find(params[:agent_id])
+      @queue = PbxQueue.find(params[:queue_id])
+      @pbxis_result = @pbxis_ws.unpause_agent agent.extension, @queue.name
+    rescue => e
+      flash[:alert] = e.message
+    end
+    
+    respond_to do |format|
+      format.js
+    end
+  end
 end
