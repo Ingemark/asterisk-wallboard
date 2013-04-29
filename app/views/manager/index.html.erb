@@ -36,11 +36,10 @@
 
                         <!-- Queue actions -->
                         <td class="action-col">
-                            <% if current_user.pbx_queues.include? queue %>
                             <div class="btn-group">
                                 <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Action<span class="caret"></span></a>
                                 <ul class="dropdown-menu right">
-                                    <% if !current_user.extension.empty? %>
+                                    <% if !current_user.extension.empty? and current_user.pbx_queues.include? queue %>
                                         <!-- Log on/of actions-->
                                         <% if @queue_statuses[queue.name]["members"].has_key? current_user.extension %>
                                             <li data-action="logonoff" data-queue="<%= queue.name %>" data-agent="<%= current_user.extension %>">
@@ -116,9 +115,6 @@
                                     </li>
                                 </ul>
                             </div>
-                            <% else %>
-                                Queue Not Assigned
-                            <% end %>
                         </td>
                     </tr>
                     <% end %>
