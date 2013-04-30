@@ -5,7 +5,6 @@
         $queueRow.find('td[data-property="abandoned"]').change_and_highlight('<%= status["abandoned"] %>', {});
         $queueRow.find('td[data-property="completed"]').change_and_highlight('<%= status["completed"] %>', {});
         $queueRow.find('td[data-property="holdTime"]').change_and_highlight('<%= status["holdTime"] %>', {});
-        $queueRow.find('td[data-property="max"]').change_and_highlight('<%= status["max"] %>', {});
         $queueRow.find('td[data-property="talkTime"]').change_and_highlight('<%= status["talkTime"] %>', {});
         
         <% if status["members"].has_key? current_user.extension %>

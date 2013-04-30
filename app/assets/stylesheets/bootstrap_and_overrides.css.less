@@ -94,10 +94,24 @@ td.text {
   text-align: center;
 }
 
-// Right anchored dropdown menu
+/* Right anchored dropdown menu */
 .dropdown-menu.right {
     left:auto;
     right:0;
     &::before {left:auto !important; right:9px;}
     &::after {left:auto !important; right:10px;}
+}
+
+/* Manager view - agent statuses table */ 
+table#agent-statuses tbody th {
+  background: @blue;
+  text-align: center;
+  color: @white;
+  padding-top: 0.7em;
+  padding-bottom: 0.7em;
+}
+
+table#agent-statuses td:first-child {
+  width: 150px;
+  font-weight: bold;
 }

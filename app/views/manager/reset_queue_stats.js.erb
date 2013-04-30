@@ -3,7 +3,6 @@ var $queueRow = $('table#queue-statuses tr[data-queue="' +'<%= @queue_status["qu
 $queueRow.find('td[data-property="abandoned"]').change_and_highlight('<%= @queue_status["abandoned"] %>', {});
 $queueRow.find('td[data-property="completed"]').change_and_highlight('<%= @queue_status["completed"] %>', {});
 $queueRow.find('td[data-property="holdTime"]').change_and_highlight('<%= @queue_status["holdTime"] %>', {});
-$queueRow.find('td[data-property="max"]').change_and_highlight('<%= @queue_status["max"] %>', {});
 $queueRow.find('td[data-property="talkTime"]').change_and_highlight('<%= @queue_status["talkTime"] %>', {});
 
 <% @queue_status["members"].each do |extension, member| %>
@@ -15,5 +14,4 @@ $queueRow.find('td[data-property="talkTime"]').change_and_highlight('<%= @queue_
     <% else %>
         $queueRow.find('td[data-property="lastCall"][data-agent="' + <%= extension %> + '"]').change_and_highlight("N/A", {});
     <% end %>
-    $queueRow.find('td[data-property="penalty"][data-agent="' + <%= extension %> + '"]').change_and_highlight('<%= member["penalty"] %>', {});
 <% end %>

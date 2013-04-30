@@ -20,7 +20,6 @@
                         <th>Completed Calls</th>
                         <th>My Last Call</th>
                         <th>Hold Time</th>
-                        <th>Max</th>
                         <th>Talk Time</th>
                         <th class="action-col">Action</th>
                     </tr>
@@ -48,7 +47,6 @@
                             <% end %>
                         </td>
                         <td class="numeric" data-property="holdTime"><%= @queue_statuses[queue.name]["holdTime"] %></td>
-                        <td class="numeric" data-property="max"><%= @queue_statuses[queue.name]["max"] %></td>
                         <td class="numeric" data-property="talkTime"><%= @queue_statuses[queue.name]["talkTime"] %></td>
                         
                         <!-- Queue actions -->
