@@ -15,28 +15,16 @@ function toggle_action_item(queue, agent, action, toggle){
     });
 }
 
-function hide_agent_status(agent){
-    var $statuses = $('table#agent-statuses td[data-agent="' + agent + '"][data-property="status"]');
-    var isLoggedOn = false;
-    $.each($statuses, function(index, value){
-        if($(value).html().trim() != "loggedoff"){
-            isLoggedOn = true;
-            return;            
-        }
-    });
-    
-    if(isLoggedOn == false){
-        var $targetCells = $('table#agent-statuses th[data-agent="' + agent + '"], table#agent-statuses td[data-agent="' + agent + '"]');
-        $targetCells.css('display', '');
-        $targetCells.addClass("hidden");
-           
-    }
+function show_agent_status(queue, agent){
+    $('table.agents-status[data-queue="' + queue + '"] tr[data-agent="' + agent + '"]').removeClass("hidden");
+    $('table.agents-status[data-queue="' + queue + '"] tfoot tr').addClass('hidden');
 }
 
-function show_agent_status(agent){
-    var $targetCells = $('table#agent-statuses th[data-agent="' + agent + '"], table#agent-statuses td[data-agent="' + agent + '"]');
-    $targetCells.css('display', '');
-    $targetCells.removeClass("hidden");
+function hide_agent_status(queue, agent){
+    $('table.agents-status[data-queue="' + queue + '"] tr[data-agent="' + agent + '"]').addClass("hidden");
+    if($('table.agents-status[data-queue="' + queue + '"] tbody tr:not(.hidden)').length == 0){
+        $('table.agents-status[data-queue="' + queue + '"] tfoot tr').removeClass('hidden');
+    }
 }
 
 /**

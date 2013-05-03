@@ -20,27 +20,43 @@ function pbx_extension_status(agent, status) {
 }
 
 function pbx_queue_count(queue, count) {
-    $('tr[data-queue="' + queue + '"] td[data-property="count"]').change_and_highlight(count, {});
+    var $queueCount = $('table.queue-status[data-queue="' + queue + '"] td[data-property="queue-count"]');
+    if($queueCount.length == 0)
+        $queueCount = $('table#queue-statuses tr[data-queue="' + queue + '"] td[data-property="queue-count"]');
+    
+    $queueCount.change_and_highlight(count, {});
 }
 
 function pbx_agent_status(agent, queue, status) {
-    $('tr[data-queue="' + queue + '"] td[data-property="status"][data-agent="' + agent + '"]').change_and_highlight(status, {});
+    // Update agent status
+    $('table.agents-status[data-queue="' + queue + '"] tr[data-agent="' + agent + '"] td[data-property="status"]').change_and_highlight(status, {});
+    
     if(status == "loggedoff"){
+        // Toggle logon/off action on
         toggle_action_item(queue, agent, 'logonoff', 'on');
+        
+        // Disable pause action
         toggle_action_item(queue, agent, 'pause', 'on');
         $('li[data-action="pause"][data-queue="' + queue + '"][data-agent="' + agent + '"]').addClass("disabled");
-        $('table#agent-statuses li[data-action="logoff"][data-queue="' + queue + '"][data-agent="' + agent + '"]').addClass("disabled");
         
-        // Hide agent status in manager view
-        hide_agent_status(agent);
+        // Disable logoff action
+        $('table.agents-status li[data-action="logoff"][data-queue="' + queue + '"][data-agent="' + agent + '"]').addClass("disabled");
+        
+        // Hide agent status
+        hide_agent_status(queue, agent);
     }else if(status == "loggedon"){
+        // Toggle logon/off action off
         toggle_action_item(queue, agent, 'logonoff', 'off');
+        
+        // Enable pause action
         toggle_action_item(queue, agent, 'pause', 'on');
         $('li[data-action="pause"][data-queue="' + queue + '"][data-agent="' + agent + '"]').removeClass("disabled");
-        $('table#agent-statuses li[data-action="logoff"][data-queue="' + queue + '"][data-agent="' + agent + '"]').removeClass("disabled");
         
-        // Show agent status in manager view
-        show_agent_status(agent);
+        // Enable logoff action
+        $('table.agents-status li[data-action="logoff"][data-queue="' + queue + '"][data-agent="' + agent + '"]').removeClass("disabled");
+        
+        // Show agent status
+        show_agent_status(queue, agent);
     }else if(status == "paused"){
         toggle_action_item(queue, agent, 'pause', 'off');
     }

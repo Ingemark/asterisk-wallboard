@@ -70,7 +70,7 @@ div#agent-phone-status {
 }
 
 table.table .action-col {
-  width: 180px;
+  width: 100px;
   text-align: center;
 }
 
@@ -102,16 +102,7 @@ td.text {
     &::after {left:auto !important; right:10px;}
 }
 
-/* Manager view - agent statuses table */ 
-table#agent-statuses tbody th {
-  background: @blue;
+/* Empty agent statuses table notice */
+table.agents-status tfoot th {
   text-align: center;
-  color: @white;
-  padding-top: 0.7em;
-  padding-bottom: 0.7em;
-}
-
-table#agent-statuses td:first-child {
-  width: 150px;
-  font-weight: bold;
 }

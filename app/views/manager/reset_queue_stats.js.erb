@@ -1,17 +1,17 @@
-var $queueRow = $('table#queue-statuses tr[data-queue="' +'<%= @queue_status["queue"] %>' + '"]');
+var $table = $('table.queue-status[data-queue="<%= @queue_status["queue"] %>"]');
         
-$queueRow.find('td[data-property="abandoned"]').change_and_highlight('<%= @queue_status["abandoned"] %>', {});
-$queueRow.find('td[data-property="completed"]').change_and_highlight('<%= @queue_status["completed"] %>', {});
-$queueRow.find('td[data-property="holdTime"]').change_and_highlight('<%= @queue_status["holdTime"] %>', {});
-$queueRow.find('td[data-property="talkTime"]').change_and_highlight('<%= @queue_status["talkTime"] %>', {});
+$table.find('td[data-property="abandoned"]').change_and_highlight('<%= @queue_status["abandoned"] %>', {});
+$table.find('td[data-property="completed"]').change_and_highlight('<%= @queue_status["completed"] %>', {});
+$table.find('td[data-property="holdTime"]').change_and_highlight('<%= @queue_status["holdTime"] %>', {});
+$table.find('td[data-property="talkTime"]').change_and_highlight('<%= @queue_status["talkTime"] %>', {});
 
 <% @queue_status["members"].each do |extension, member| %>
-    $queueRow = $('table#agent-statuses tr[data-queue="' +'<%= @queue_status["queue"] %>' + '"]');
-    $queueRow.find('td[data-property="callsTaken"][data-agent="' + <%= extension %> + '"]').change_and_highlight('<%= member["callsTaken"] %>', {});
-    
+    $agentRow = $('table.agents-status[data-queue="<%= @queue_status["queue"] %>"] tr[data-agent="<%= extension %>"]');
+    $agentRow.find('td[data-property="callsTaken"]').change_and_highlight('<%= member["callsTaken"] %>', {});
+
     <% if member["lastCall"] > 0 %>
-        $queueRow.find('td[data-property="lastCall"][data-agent="' + <%= extension %> + '"]').change_and_highlight('<%= Time.at(member["lastCall"]).strftime("%d.%m.%Y. %H:%M:%S") %>', {});
+        $agentRow.find('td[data-property="lastCall"]').change_and_highlight('<%= Time.at(member["lastCall"]).strftime("%d.%m.%Y. %H:%M:%S") %>', {});
     <% else %>
-        $queueRow.find('td[data-property="lastCall"][data-agent="' + <%= extension %> + '"]').change_and_highlight("N/A", {});
+        $agentRow.find('td[data-property="lastCall"]').change_and_highlight("N/A", {});
     <% end %>
 <% end %>
