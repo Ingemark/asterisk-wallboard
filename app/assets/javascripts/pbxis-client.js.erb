@@ -30,6 +30,7 @@ function pbx_queue_count(queue, count) {
 function pbx_agent_status(agent, queue, status) {
     // Update agent status
     $('table.agents-status[data-queue="' + queue + '"] tr[data-agent="' + agent + '"] td[data-property="status"]').change_and_highlight(status, {});
+    $('table#queue-statuses tr[data-queue="' + queue + '"] td[data-agent="' + agent + '"][data-property="status"]').change_and_highlight(status, {});
     
     if(status == "loggedoff"){
         // Toggle logon/off action on
